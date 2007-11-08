@@ -1,5 +1,5 @@
 <?php
-sfConfig::set('sf_extjs2_js_dir', '/sfExtjs2Plugin');
+sfConfig::set('sf_extjs2_js_dir', '/sfExtjs2Plugin/');
 sfConfig::set('sf_extjs2_css_dir', '/sfExtjs2Plugin/resources/css/');
 sfConfig::set('sf_extjs2_images_dir', '/sfExtjs2Plugin/resources/images/');
 sfConfig::set('sf_extjs2_spacer', '/sfExtjs2Plugin/resources/images/default/s.gif');
