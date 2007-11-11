@@ -4,34 +4,31 @@
  * @plugin           sfExts2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
  * @author           Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>
- * @version          0.0.16
- * @last modified    11.07.2007 KRavEN: Fixed the adapter includes to load all required files in the correct order
- *                              moved ext-base into adapters, pass ext as adapter for standalone
- *                              changed all javascript to load first so they will come before files specified in view.yml
- *                   11.07.2007 __call added
- *                              getExtButton removed
- *                              getExtPanel removed
- *                              getExtTabPanel removed
-*                    11.04.2007 getExtObject added
-*                               getExtObjectComponent added
-*                    07.21.2007 getExtTabPanel added
-*                               getExtPanel added
-*                    07.17.2007 Ext2.0 added
- *                   07.15.2007 created
+ * @version          0.0.17
+ * @last modified    11.12.2007	Kubens: 
+ * 										- Fixed loading order of adapters. If adapters are used then it is important to load 
+ * 											adapters and coresponding files before ext-all.js
+ * 									  - Overworked: load method. Adapters and themes are setuped in config.php
+ * 										- Overworked: constructor. If no adapter or theme is passed then default
+ * 											settings from config.php will used 
+ * 									 11.07.2007 KRavEN: 
+ * 										- Fixed the adapter includes to load all required files in the correct order
+ *                      moved ext-base into adapters, pass ext as adapter for standalone
+ *                      changed all javascript to load first so they will come before files specified in view.yml
+ *                   07.15.2007 Kubens: 
+ * 										- created
  */
 
 class sfExtjs2Plugin {
 
   private $items    = array();
-  private $adapter  = 'ext';
-  private $adapters = array('jquery','prototype','yui', 'ext');
+  private $adapter  = '';
   private $theme    = '';
-  private $themes   = array('aero','gray');
 
   public function __construct($options = array())
   {
-    $this->adapter = key_exists('adapter',$options) && in_array($options['adapter'], $this->adapters) ? $options['adapter'] : '';
-    $this->theme   = key_exists('theme',$options)   && in_array($options['theme'], $this->themes)     ? $options['theme']   : '';
+    $this->adapter = key_exists('adapter',$options) && key_exists($options['adapter'], sfConfig::get('sf_extjs2_adapters', array())) ? $options['adapter'] : sfConfig::get('sf_extjs2_default_adapter');
+    $this->theme   = key_exists('theme',$options)   && key_exists($options['theme'],   sfConfig::get('sf_extjs2_themes', array()))   ? $options['theme']   : sfConfig::get('sf_extjs2_default_theme');
   }
 
   public static function __call ($class, $parameters)
@@ -48,7 +45,8 @@ class sfExtjs2Plugin {
    * renders a Ext.Object
    *
    * Example usage:
-     * Syntax A = short form without any options
+   * 
+   * Syntax A = short form without any options
    *
    *   echo $sfExtjs2Plugin->Object(array
    *         (
@@ -57,25 +55,25 @@ class sfExtjs2Plugin {
    *           'items' => array
    *           (
    *             $sfExtjs2Plugin->Object(array('title'=>'"Object A"')),
-   *               $sfExtjs2Plugin->Object(array('title'=>'"Object B"'))
-   *          )
-   *      );
+   *             $sfExtjs2Plugin->Object(array('title'=>'"Object B"'))
+   *           )
+   *         );
    *
    * Syntax B = long form with additional options
    *
    *   echo $sfExtjs2Plugin->Object(array
    *         (
-   *             'name' => 'object',      // option to render Javascript variable
+   *           'name' => 'object',      // option to render Javascript variable
    *           'ext' => array
-   *             (
+   *           (
    *             'id' => 'id',
    *             'renderTo' => 'document.body',
    *               'items' => array
    *               (
    *                 $sfExtjs2Plugin->Object(array('title'=>'"Object A"')),
-   *                   $sfExtjs2Plugin->Object(array('title'=>'"Object B"'))
-   *              )
-   *          )
+   *                 $sfExtjs2Plugin->Object(array('title'=>'"Object B"'))
+   *               )
+   *           )
    *         );
    *
    * @param string object
@@ -153,42 +151,25 @@ class sfExtjs2Plugin {
   public function load()
   {
     $response = sfContext::getInstance()->getResponse();
-
+    
     // add javascript sources for adapter
-    if (in_array($this->adapter, $this->adapters))
+    $adapters = sfConfig::get(sf_extjs2_adapters, array()); 
+    foreach ($adapters[$this->adapter] as $file)
     {
-      switch($this->adapter)
-      {
-        case 'yui':
-          $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). sprintf('adapter/%s/%s-utilities.js', $this->adapter, $this->adapter), 'first');
-          $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). sprintf('adapter/%s/ext-%s-adapter.js', $this->adapter, $this->adapter), 'first');
-          break;
-        case 'jquery':
-          $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). sprintf('adapter/%s/%s.js', $this->adapter, $this->adapter), 'first');
-          $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). sprintf('adapter/%s/%s-plugins.js', $this->adapter, $this->adapter), 'first');
-          $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). sprintf('adapter/%s/ext-%s-adapter.js', $this->adapter, $this->adapter), 'first');
-          break;
-        case 'prototype':
-          $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). sprintf('adapter/%s/%s.js', $this->adapter, $this->adapter), 'first');
-          $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). sprintf('adapter/%s/scriptaculous.js?load=effects', $this->adapter, $this->adapter), 'first');
-          $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). sprintf('adapter/%s/ext-%s-adapter.js', $this->adapter, $this->adapter), 'first');
-          break;
-        default:
-          $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). sprintf('adapter/%s/ext-%s-adapter.js', $this->adapter, $this->adapter), 'first');
-          break;
-      }
+      $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). $file, 'first');
     }
 
     // add javascript sources for ext all
-    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').  'ext-all.js', 'first');
-
+    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). 'ext-all.js', 'last');
+    
     // add css sources for ext all
-    $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir'). 'ext-all.css', 'first');
+    $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir'). 'ext-all.css', 'last');
 
     // add css sources for theme
-    if (in_array($this->theme, $this->themes))
+    $themes = sfConfig::get(sf_extjs2_themes, array()); 
+    foreach ($themes[$this->theme] as $file)
     {
-      $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir'). sprintf('xtheme-%s.css', $this->theme), 'first');
+      $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir'). $file, 'last');
     }
   }
 
@@ -246,6 +227,7 @@ class sfExtjs2Plugin {
 
     return $attributes;
   }
+ 
 }
 
 ?>
