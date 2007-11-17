@@ -4,8 +4,10 @@
  * @plugin           sfExts2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
  * @author           Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>
- * @version          0.0.17
- * @last modified    11.12.2007	Kubens: 
+ * @version          0.0.18
+ * @last modified    11.17.2007 Kubens:
+ * 										- Added features to create custom classes and custom methods
+ * 									 11.12.2007	Kubens: 
  * 										- Fixed loading order of adapters. If adapters are used then it is important to load 
  * 											adapters and coresponding files before ext-all.js
  * 									  - Overworked: load method. Adapters and themes are setuped in config.php
@@ -18,23 +20,27 @@
  *                   07.15.2007 Kubens: 
  * 										- created
  */
-
 class sfExtjs2Plugin {
 
-  private $items    = array();
-  private $adapter  = '';
-  private $theme    = '';
+  const LBR    = "\n";
+  const LBR_CM = ",\n";
+  const LBR_SM = ";\n";
+
+  private $items     = array();
+  private $adapter   = ''; // current adapter
+  private $theme     = ''; // current theme
+  private $namespace = ''; // current namespace
 
   public function __construct($options = array())
   {
-    $this->adapter = key_exists('adapter',$options) && key_exists($options['adapter'], sfConfig::get('sf_extjs2_adapters', array())) ? $options['adapter'] : sfConfig::get('sf_extjs2_default_adapter');
-    $this->theme   = key_exists('theme',$options)   && key_exists($options['theme'],   sfConfig::get('sf_extjs2_themes', array()))   ? $options['theme']   : sfConfig::get('sf_extjs2_default_theme');
+    $this->adapter = is_array($options) && array_key_exists('adapter',$options) && array_key_exists($options['adapter'], sfConfig::get('sf_extjs2_adapters', array())) ? $options['adapter'] : sfConfig::get('sf_extjs2_default_adapter');
+    $this->theme   = is_array($options) && array_key_exists('theme',$options)   && array_key_exists($options['theme'],   sfConfig::get('sf_extjs2_themes', array()))   ? $options['theme']   : sfConfig::get('sf_extjs2_default_theme');
   }
 
   public static function __call ($class, $parameters)
   {
     $classes = sfConfig::get('classes');
-    if (key_exists($class, $classes))
+    if (is_array($classes) && array_key_exists($class, $classes))
     {
       $object = sfConfig::get($classes[$class]);
       return sfExtjs2Plugin::getExtObject($object['class'], $parameters[0]);
@@ -85,7 +91,7 @@ class sfExtjs2Plugin {
   {
     # syntax A is a shortform of syntax B
     # if syntax A is used then convert syntax A to syntax B
-    if (!array_key_exists('ext', $attributes))
+    if (is_array($attributes) && !array_key_exists('ext', $attributes))
     {
       $tmp = $attributes;
       $attributes = array();
@@ -96,7 +102,7 @@ class sfExtjs2Plugin {
     # therefore all list attributes must be rendered as [attributeA, attributeB, attributeC]
     foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute)
     {
-      if (array_key_exists($attribute, $attributes['ext']))
+      if (is_array($attributes) && array_key_exists($attribute, $attributes['ext']))
       {
         $attributes['ext'][$attribute] = sprintf('[%s]', implode(',',$attributes['ext'][$attribute]));
       }
@@ -104,10 +110,10 @@ class sfExtjs2Plugin {
 
     // get source of component
     $source = call_user_func(array('sfExtjs2Plugin', 'getExtObjectComponent'), $attributes['ext'], sfConfig::get($class));
-
-    // if 'name' assigned then we must render
+    
+    // if 'name' is assigned then we must render
     // either a Javascript variable or an attribute of this
-    if (array_key_exists('name', $attributes))
+    if (is_array($attributes) && array_key_exists('name', $attributes))
     {
       $source = sprintf
       (
@@ -119,7 +125,7 @@ class sfExtjs2Plugin {
     }
 
     // if 'lbr' assigned then we must render a line break
-    if (array_key_exists('lbr', $attributes))
+    if (is_array($attributes) && array_key_exists('lbr', $attributes))
     {
       $source .= $attributes['lbr'];
     }
@@ -153,7 +159,7 @@ class sfExtjs2Plugin {
     $response = sfContext::getInstance()->getResponse();
     
     // add javascript sources for adapter
-    $adapters = sfConfig::get(sf_extjs2_adapters, array()); 
+    $adapters = sfConfig::get('sf_extjs2_adapters', array()); 
     foreach ($adapters[$this->adapter] as $file)
     {
       $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). $file, 'first');
@@ -166,7 +172,7 @@ class sfExtjs2Plugin {
     $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir'). 'ext-all.css', 'last');
 
     // add css sources for theme
-    $themes = sfConfig::get(sf_extjs2_themes, array()); 
+    $themes = sfConfig::get('sf_extjs2_themes', array()); 
     foreach ($themes[$this->theme] as $file)
     {
       $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir'). $file, 'last');
@@ -179,10 +185,11 @@ class sfExtjs2Plugin {
    */
   public function begin()
   {
-    echo "\n";
-    echo "<script type='text/javascript'>\n";
-    echo "Ext.onReady(function(){\n";
-    echo "Ext.BLANK_IMAGE_URL = '".sfConfig::get('sf_extjs2_spacer')."'\n";
+    $source  = sfExtjs2Plugin::LBR;
+    $source .= sprintf("<script type='text/javascript'>%s", sfExtjs2Plugin::LBR);
+    $source .= sprintf("Ext.BLANK_IMAGE_URL = '%s'%s", sfConfig::get('sf_extjs2_spacer'), sfExtjs2Plugin::LBR_SM);
+
+    echo $source;
   }
 
   /**
@@ -191,10 +198,98 @@ class sfExtjs2Plugin {
    */
   public function end()
   {
-    echo "\n";
-    echo "});\n";
-    echo "</script>\n";
+    $source  = sfExtjs2Plugin::LBR;
+    $source .= sprintf("</script>%s", sfExtjs2Plugin::LBR);
+
+    echo $source;
   }
+
+  /**
+   * writes opening class tag
+   *
+   * @param string namespace 
+   * @param string classname
+   * @param string extend
+   * @param array attributes
+   *
+   */
+  public function beginClass($namespace = null, $classname = null, $extend = null, $attributes = array())
+  {
+    $source = '';
+
+    // write namespace directive 
+    // prevent double output of namespace directive  
+    if ($this->namespace !== $namespace)
+    {
+      $this->namespace = $namespace;
+      $source .= sprintf("Ext.namespace('%s')%s", $namespace, sfExtjs2Plugin::LBR_SM);
+    }
+    
+    // write class tag
+    $source .= sprintf("%s.%s = Ext.extend(%s, {%s", $namespace, $classname, $extend, sfExtjs2Plugin::LBR);
+
+    // write attributes
+    $i = 0;
+    foreach ($attributes as $key => $value)
+    {
+      $i++;
+      $source .= sprintf('%s: %s%s', $key, $value, $i < count($attributes) ? sfExtjs2Plugin::LBR_CM : sfExtjs2Plugin::LBR );
+    }
+
+    echo $source;
+  }
+
+  /**
+   * writes closing class tag
+   *
+   */
+  public function endClass()
+  {
+    $source  = '';
+    $source .= sprintf("})%s", sfExtjs2Plugin::LBR_SM);
+ 
+    echo $source;
+  }
+
+  /**
+   * returns  
+   *
+   */
+  public static function methodEvalPHP ($matches)
+  {
+    $source = str_replace( array('<?php', '<?', '?>'), '', $matches[0]); 
+    ob_start();
+    eval($source);
+    $source = ob_get_contents();
+    ob_end_clean();
+
+    return $source;
+  }
+  public static function method($attributes = array())
+  {
+    $source = is_array($attributes) && array_key_exists('source', $attributes) ? $attributes['source'] : $attributes;
+    $source = preg_replace_callback( 
+                '/(\<\?php)(.*?)(\?>)/si', 
+                array('self', 'methodEvalPHP'),      
+                $source
+              );
+    $source = sprintf("function () { %s }", $source);
+              
+    return $source;              
+  }
+
+  /**
+   * returns custom class 
+   *
+   */
+  public function customClass($classname, $attributes = array())
+  {
+    $source  = '';
+    $source .= $this->getExtObjectComponent($attributes, array('attributes'=>array(), 'class'=>$classname));
+
+    return $source;
+  }
+
 
   /**
    * Build attributes based on custom attributes and default attributes.
@@ -227,7 +322,7 @@ class sfExtjs2Plugin {
 
     return $attributes;
   }
- 
+   
 }
 
 ?>
