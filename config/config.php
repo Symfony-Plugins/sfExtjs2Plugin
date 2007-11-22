@@ -1,4 +1,5 @@
 <?php
+sfConfig::set('sf_extjs2_version', 'v0.22');
 #
 # adapters
 #
@@ -53,40 +54,96 @@ sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons'));
 #
 sfConfig::set('classes',
   array(
-    'Button'     => 'Ext.Button',
-    'Panel'      => 'Ext.Panel',
-    'TabPanel'   => 'Ext.TabPanel',
-    'Viewport'   => 'Ext.Viewport',
-    'Window'     => 'Ext.Window',
-    'FormPanel'  => 'Ext.FormPanel',
-    'DateField'  => 'Ext.form.DateField',
-    'TextField'  => 'Ext.form.TextField',
-    'TimeField'  => 'Ext.form.TimeField',
-    'HtmlEditor' => 'Ext.form.HtmlEditor'
+    // data
+    'JsonReader'	 => 'Ext.data.JsonReader',
+    'Store'				 => 'Ext.data.Store',
+    'HttpProxy' 	 => 'Ext.data.HttpProxy',
+    // widgets
+    'BoxComponent' => 'Ext.BoxComponent',
+    'Button'       => 'Ext.Button',
+    'GridPanel'		 => 'Ext.grid.GridPanel',
+    'ColumnModel'	 => 'Ext.grid.ColumnModel',
+    'Panel'        => 'Ext.Panel',
+    'TabPanel'     => 'Ext.TabPanel',
+    'Viewport'     => 'Ext.Viewport',
+    'Window'       => 'Ext.Window',
+    'FormPanel'    => 'Ext.FormPanel',
+    'DateField'    => 'Ext.form.DateField',
+    'TextField'    => 'Ext.form.TextField',
+    'TimeField'    => 'Ext.form.TimeField',
+    'HtmlEditor'   => 'Ext.form.HtmlEditor',
+    'Menu'	  		 => 'Ext.menu.Menu',
+    'Item'	  		 => 'Ext.menu.Item'    
   )
 );
 #
 # default setting for classes
 #
+
+#
+# data
+#
+sfConfig::set('Ext.data.JsonReader',
+  array(
+    'class'       => 'Ext.data.JsonReader',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.data.Store',
+  array(
+    'class'       => 'Ext.data.Store',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.data.HttpProxy',
+  array(
+    'class'       => 'Ext.data.HttpProxy',
+    'attributes'  => array()
+  )
+);
+
+#
+# widgets
+#
+sfConfig::set('Ext.BoxComponent',
+  array(
+    'class'       => 'Ext.BoxComponent',
+    'attributes'  => array()
+  )
+);
+
 sfConfig::set('Ext.Button',
   array(
-    'prefix'      => 'btn',
     'class'       => 'Ext.Button',
-    'attributes'  => array('text' => '"Default Text"')
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.grid.GridPanel',
+  array(
+    'class'       => 'Ext.grid.GridPanel',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.grid.ColumnModel',
+  array(
+    'class'       => 'Ext.grid.ColumnModel',
+    'attributes'  => array()
   )
 );
 
 sfConfig::set('Ext.Panel',
   array(
-    'prefix'      => 'pnl',
     'class'       => 'Ext.Panel',
-    'attributes'  => array('title' => '"Default Title"')
+    'attributes'  => array()
   )
 );
 
 sfConfig::set('Ext.TabPanel',
   array(
-    'prefix'      => 'tab',
     'class'       => 'Ext.TabPanel',
     'attributes'  => array(
       'resizeTabs'      => 'true',
@@ -101,7 +158,6 @@ sfConfig::set('Ext.TabPanel',
 
 sfConfig::set('Ext.Viewport',
   array(
-    'prefix'      => 'vprt',
     'class'       => 'Ext.Viewport',
     'attributes'  => array('layout' => '"border"')
   )
@@ -109,7 +165,6 @@ sfConfig::set('Ext.Viewport',
 
 sfConfig::set('Ext.Window',
   array(
-    'prefix'      => 'wnd',
     'class'       => 'Ext.Window',
     'attributes'  => array(
       'constrain'   => 'true',
@@ -125,7 +180,6 @@ sfConfig::set('Ext.Window',
 
 sfConfig::set('Ext.FormPanel',
   array(
-    'prefix'      => 'frm',
     'class'       => 'Ext.FormPanel',
     'attributes'  => array()
   )
@@ -133,7 +187,6 @@ sfConfig::set('Ext.FormPanel',
 
 sfConfig::set('Ext.form.DateField',
   array(
-    'prefix'      => 'dfld',
     'class'       => 'Ext.form.DateField',
     'attributes'  => array('fieldLabel' => '"Default FieldLabel"')
   )
@@ -141,7 +194,6 @@ sfConfig::set('Ext.form.DateField',
 
 sfConfig::set('Ext.form.TextField',
   array(
-    'prefix'      => 'txtfld',
     'class'       => 'Ext.form.TextField',
     'attributes'  => array('fieldLabel' => '"Default FieldLabel"')
   )
@@ -149,7 +201,6 @@ sfConfig::set('Ext.form.TextField',
 
 sfConfig::set('Ext.form.TimeField',
   array(
-    'prefix'      => 'tmfld',
     'class'       => 'Ext.form.TimeField',
     'attributes'  => array('fieldLabel' => '"Default FieldLabel"')
   )
@@ -157,9 +208,22 @@ sfConfig::set('Ext.form.TimeField',
 
 sfConfig::set('Ext.form.HtmlEditor',
   array(
-    'prefix'      => 'htmledtr',
     'class'       => 'Ext.form.HtmlEditor',
     'attributes'  => array('fieldLabel' => '"Default FieldLabel"')
+  )
+);
+
+sfConfig::set('Ext.menu.Menu',
+  array(
+    'class'       => 'Ext.menu.Menu',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.menu.Item',
+  array(
+    'class'       => 'Ext.menu.Item',
+    'attributes'  => array()
   )
 );
 

@@ -4,8 +4,11 @@
  * @plugin           sfExts2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
  * @author           Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>
- * @version          0.0.18
- * @last modified    11.17.2007 Kubens:
+ * @version          0.0.22
+ * @last modified    11.22.2007 Kubens:
+ * 										- Added features to create Ext.application 
+ * 										- Added parameters support for Ext.object constructors
+ * 									 11.17.2007 Kubens:
  * 										- Added features to create custom classes and custom methods
  * 									 11.12.2007	Kubens: 
  * 										- Fixed loading order of adapters. If adapters are used then it is important to load 
@@ -43,22 +46,21 @@ class sfExtjs2Plugin {
     if (is_array($classes) && array_key_exists($class, $classes))
     {
       $object = sfConfig::get($classes[$class]);
-      return sfExtjs2Plugin::getExtObject($object['class'], $parameters[0]);
+  	  return sfExtjs2Plugin::getExtObject($object['class'], $parameters[0]);
     }
   }
 
   /**
-   * renders a Ext.Object
-   *
+   * Renders javascript source for Ext.Object
    * Example usage:
    * 
    * Syntax A = short form without any options
    *
    *   echo $sfExtjs2Plugin->Object(array
    *         (
-   *           'id' => 'id',
+   *           'id'       => 'id',
    *           'renderTo' => 'document.body',
-   *           'items' => array
+   *           'items'    => array
    *           (
    *             $sfExtjs2Plugin->Object(array('title'=>'"Object A"')),
    *             $sfExtjs2Plugin->Object(array('title'=>'"Object B"'))
@@ -69,47 +71,60 @@ class sfExtjs2Plugin {
    *
    *   echo $sfExtjs2Plugin->Object(array
    *         (
-   *           'name' => 'object',      // option to render Javascript variable
-   *           'ext' => array
+   *           'name'       => 'string',      // option to render Javascript variable
+   *           'attributes' => array					// attributes for Ext constructor
    *           (
-   *             'id' => 'id',
+   *             'id'       => 'id',
    *             'renderTo' => 'document.body',
-   *               'items' => array
+   *             'items'    => array
    *               (
-   *                 $sfExtjs2Plugin->Object(array('title'=>'"Object A"')),
-   *                 $sfExtjs2Plugin->Object(array('title'=>'"Object B"'))
+   *                 $sfExtjs2Plugin->Object(array('title' => '"Object A"')),
+   *                 $sfExtjs2Plugin->Object(array('title' => '"Object B"'))
    *               )
    *           )
+   * 					 'parameters' => array
+   * 					 (
+   * 						 'parameter1', 
+   * 						 'parameter2'
+   * 					 )
    *         );
    *
-   * @param string object
+   * @param string class
    * @param array attributes
    * @return string source of Ext component
    *
    */
-  public static function getExtObject($class, $attributes = array(), $options = array())
-  {
+  public static function getExtObject($class, $attributes = array())
+  {    
+    # parameters for constructor
+    $parameters = array();
+    if (is_array($attributes) && array_key_exists('parameters', $attributes))
+    {
+      $parameters = $attributes['parameters'];
+      unset($attributes['parameters']);
+    }
+    
     # syntax A is a shortform of syntax B
     # if syntax A is used then convert syntax A to syntax B
-    if (is_array($attributes) && !array_key_exists('ext', $attributes))
+    if (is_array($attributes) && !array_key_exists('attributes', $attributes))
     {
       $tmp = $attributes;
       $attributes = array();
-      $attributes['ext'] = $tmp;
+      $attributes['attributes'] = $tmp;
     }
 
     # list attributes must defined as an Javascript array
     # therefore all list attributes must be rendered as [attributeA, attributeB, attributeC]
     foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute)
     {
-      if (is_array($attributes) && array_key_exists($attribute, $attributes['ext']))
+      if (is_array($attributes) && array_key_exists($attribute, $attributes['attributes']))
       {
-        $attributes['ext'][$attribute] = sprintf('[%s]', implode(',',$attributes['ext'][$attribute]));
+        $attributes['attributes'][$attribute] = sprintf('[%s]', implode(',',$attributes['attributes'][$attribute]));
       }
     }
 
     // get source of component
-    $source = call_user_func(array('sfExtjs2Plugin', 'getExtObjectComponent'), $attributes['ext'], sfConfig::get($class));
+    $source = call_user_func(array('sfExtjs2Plugin', 'getExtObjectComponent'), $attributes['attributes'], sfConfig::get($class), $parameters);
     
     // if 'name' is assigned then we must render
     // either a Javascript variable or an attribute of this
@@ -136,22 +151,31 @@ class sfExtjs2Plugin {
   /**
    * @param array attributes
    * @param array config
-   * @param boolean inline
+   * @param array parameters 
    * @return string source of Ext component
    *
    */
-  public static function getExtObjectComponent($attributes = array(), $config = array(), $inline = false)
+  public static function getExtObjectComponent($attributes = array(), $config = array(), $parameters = array())
   {
     $attributes = sfExtjs2Plugin::_build_attributes($attributes, $config['attributes']);
-    $source = $inline ? sprintf('{%s}', $attributes) : sprintf('new %s ({%s})', $config['class'], $attributes);
+    $attributes = sprintf('%s', $attributes != '' ? '{'.$attributes.'}' : '');
+       
+    $parameters = implode(',', $parameters);
+    $parameters = sprintf('%s%s', $attributes != '' && $parameters != '' ? ',' : '', $parameters);
+    
+    $source = sprintf(
+                'new %s (%s%s)', 
+                $config['class'], 
+                $attributes, 
+                $parameters
+							);
 
     return $source;
   }
 
   /**
-   * writes sources for
-   *  css files
-   *  js files
+   * add sources for css and js 
+   * files to response
    *
    */
   public function load()
@@ -241,7 +265,8 @@ class sfExtjs2Plugin {
 
   /**
    * writes closing class tag
-   *
+   * 
+   * @return source
    */
   public function endClass()
   {
@@ -252,8 +277,69 @@ class sfExtjs2Plugin {
   }
 
   /**
-   * returns  
-   *
+   * writes begining application tag
+   * 
+   * @param attributes['name']
+   * @param attributes['private']
+   * @param attributes['public']
+   * @return source 
+   */
+  public function beginApplication($attributes = array())
+  {
+    // private attributes
+    $sourcePrivate = '';
+    if (array_key_exists('private', $attributes))
+    {
+      foreach ($attributes['private'] as $key => $value)
+      {
+        $sourcePrivate .= sprintf('%svar %s = %s;', sfExtjs2Plugin::LBR, $key, $value);
+      }    
+    }
+
+    // public attributes
+    $sourcePublic = '';
+    if (array_key_exists('public', $attributes))
+    {
+      $i = 0;
+      foreach ($attributes['public'] as $key => $value)
+      {
+        $i++;
+        $sourcePublic .= sprintf('%s%s: %s%s', sfExtjs2Plugin::LBR, $key, $value, $i < count($attributes['public']) ? ',' : '' );
+      }
+    }    
+    
+    // write application syntax
+    $source = '';
+    $source = sprintf(
+      'var %s = function() { %s%sreturn {%s %s', 
+      $attributes['name'], 
+      $sourcePrivate,
+      $sourcePrivate != '' ? sfExtjs2Plugin::LBR : '',
+      $sourcePublic,
+      $sourcePublic != '' ? sfExtjs2Plugin::LBR : ''
+    );
+ 
+    echo $source;
+  }
+  
+  /**
+   * writes closing application tag
+   * 
+   * @return source
+   */ 
+  public function endApplication()
+  {
+    $source  = '';
+    $source .= sprintf("}}()%s", sfExtjs2Plugin::LBR_SM);
+ 
+    echo $source;
+  }
+  
+  /**
+   * returns output of evaled php code
+   *  
+   * @param array matches
+   * @return string source
    */
   public static function methodEvalPHP ($matches)
   {
@@ -265,6 +351,13 @@ class sfExtjs2Plugin {
 
     return $source;
   }
+  /**
+   * returns source for method
+   * including output of evaled php code
+   *
+   * @param array attributes
+   * @return string source
+   */
   public static function method($attributes = array())
   {
     $source = is_array($attributes) && array_key_exists('source', $attributes) ? $attributes['source'] : $attributes;
@@ -279,8 +372,11 @@ class sfExtjs2Plugin {
   }
 
   /**
-   * returns custom class 
+   * returns source of custom class 
    *
+   * @param string classname
+   * @package array attributes
+   * @return string source
    */
   public function customClass($classname, $attributes = array())
   {
@@ -289,7 +385,6 @@ class sfExtjs2Plugin {
 
     return $source;
   }
-
 
   /**
    * Build attributes based on custom attributes and default attributes.
@@ -300,7 +395,7 @@ class sfExtjs2Plugin {
    *
    *         _buid_attributes(
    *             array('foo' => 'custombar', 'foo1' => 'bar1', 'foo2' => 'bar2'),    // custom attributes
-   *             array('foo' => 'defbar')                                                                                    // default attributes
+   *             array('foo' => 'defbar')                                            // default attributes
    *        )
    *
    *         returns 'foo: custombar, foo1: bar1, foo2: bar2'
