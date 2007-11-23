@@ -1,5 +1,13 @@
 <?php
 sfConfig::set('sf_extjs2_version', 'v0.23');
+
+#
+# array values that don't need quotes
+#
+$quoteExcept = array('value' => array('true', 'false', 'new Ext.', 'function', 'Ext.'),
+                     'key' => array('renderer', 'store', 'defaults', 'plugins', 'cm', 'ds', 'view', 'tbar', 'bbar'));
+sfConfig::set('sf_extjs2_quote_except', $quoteExcept);
+
 #
 # adapters
 #
@@ -11,20 +19,21 @@ sfConfig::set('sf_extjs2_adapters',
       'adapter/jquery/jquery-plugins.js',
       'adapter/jquery/ext-jquery-adapter.js'
     ),
-		'prototype' => array(
+        'prototype' => array(
       'adapter/prototype/prototype.js',
       'adapter/prototype/scriptaculous.js?load=effects.js',
       'adapter/prototype/ext-prototype-adapter.js'
-		),
-		'yui' => array(
+        ),
+        'yui' => array(
       'adapter/yui/yui-utilities.js',
       'adapter/yui/ext-yui-adapter.js'
     ),
-		'ext' => array(
+        'ext' => array(
       'adapter/ext/ext-base.js'
     )
   )
 );
+
 #
 # themes
 #
@@ -35,34 +44,39 @@ sfConfig::set('sf_extjs2_themes',
     'gray' => array( 'xtheme-gray.css' )
   )
 );
+
 #
 # base directories
 #
 sfConfig::set('sf_extjs2_js_dir', '/sfExtjs2Plugin/');
 sfConfig::set('sf_extjs2_css_dir', '/sfExtjs2Plugin/resources/css/');
 sfConfig::set('sf_extjs2_images_dir', '/sfExtjs2Plugin/resources/images/');
+
 #
 # spacer gif
 #
 sfConfig::set('sf_extjs2_spacer', '/sfExtjs2Plugin/resources/images/default/s.gif');
+
 #
 # attributes which must handled as array
 #
-sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons'));
+sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons', 'defaults', 'plugins', 'cm', 'ds', 'view', 'tbar', 'bbar'));
+
 #
-# mapping plugin method against class 
+# mapping plugin method against class
 #
 sfConfig::set('classes',
   array(
     // data
-    'JsonReader'	 => 'Ext.data.JsonReader',
-    'Store'				 => 'Ext.data.Store',
-    'HttpProxy' 	 => 'Ext.data.HttpProxy',
+    'JsonReader'   => 'Ext.data.JsonReader',
+    'Store'        => 'Ext.data.Store',
+    'HttpProxy'    => 'Ext.data.HttpProxy',
+
     // widgets
     'BoxComponent' => 'Ext.BoxComponent',
     'Button'       => 'Ext.Button',
-    'GridPanel'		 => 'Ext.grid.GridPanel',
-    'ColumnModel'	 => 'Ext.grid.ColumnModel',
+    'GridPanel'    => 'Ext.grid.GridPanel',
+    'ColumnModel'  => 'Ext.grid.ColumnModel',
     'Panel'        => 'Ext.Panel',
     'TabPanel'     => 'Ext.TabPanel',
     'Viewport'     => 'Ext.Viewport',
@@ -72,8 +86,8 @@ sfConfig::set('classes',
     'TextField'    => 'Ext.form.TextField',
     'TimeField'    => 'Ext.form.TimeField',
     'HtmlEditor'   => 'Ext.form.HtmlEditor',
-    'Menu'	  		 => 'Ext.menu.Menu',
-    'Item'	  		 => 'Ext.menu.Item'    
+    'Menu'         => 'Ext.menu.Menu',
+    'Item'         => 'Ext.menu.Item'
   )
 );
 #
@@ -176,7 +190,6 @@ sfConfig::set('Ext.Window',
     )
   )
 );
-
 
 sfConfig::set('Ext.FormPanel',
   array(
