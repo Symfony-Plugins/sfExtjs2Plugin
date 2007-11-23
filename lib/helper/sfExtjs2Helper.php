@@ -4,10 +4,11 @@
  * @plugin           sfExts2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
  * @author           Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>
- * @version          0.0.22
+ * @version          0.0.23
  * @last modified    11.22.2007 Kubens:
- * 										- Added features to create Ext.application 
- * 										- Added parameters support for Ext.object constructors
+ * 										- Added parameter support for custom methods 
+ * 										- Added features to create application 
+ * 										- Added parameter support for Ext.object constructors
  * 									 11.17.2007 Kubens:
  * 										- Added features to create custom classes and custom methods
  * 									 11.12.2007	Kubens: 
@@ -366,7 +367,7 @@ class sfExtjs2Plugin {
                 array('self', 'methodEvalPHP'),      
                 $source
               );
-    $source = sprintf("function () { %s }", $source);
+    $source = sprintf("function (%s) { %s }", is_array($attributes) && array_key_exists('parameters', $attributes) ? $attributes['parameters'] : '', $source);
               
     return $source;              
   }
