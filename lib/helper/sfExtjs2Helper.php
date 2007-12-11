@@ -118,6 +118,7 @@ class sfExtjs2Plugin {
       }
       else
       {
+        // TODO: fix this $value = array, so encode it to { key, value} recursively!
         $attributes[$key] = $value;
       }
     }
@@ -432,10 +433,35 @@ class sfExtjs2Plugin {
     $attributes = '';
     foreach ($merged_attributes as $key => $value)
     {
-      $attributes .= sprintf('%s%s:%s', ($attributes === '' ? '' : ','), $key, $value);
+      $attributes .= sprintf('%s%s:%s', ($attributes === '' ? '' : ','), $key, sfExtjs2Plugin::_process_value($value));
     }
 
     return $attributes;
+  }
+  
+  private static function _process_value($value = '')
+  {
+    if (is_array($value)) 
+    {
+      $array_value = $value;
+      $value = '{';
+      
+      foreach ($array_value as $key => $v)
+      {
+        if (!is_array($v) && ($v != 'true') && ($v != 'false'))
+        {
+          $value .= sprintf('%s%s:\'%s\'', ($value === '{' ? '' : ','), $key, sfExtjs2Plugin::_process_value($v));
+        }
+        else
+        {
+          $value .= sprintf('%s%s:%s', ($value === '{' ? '' : ','), $key, sfExtjs2Plugin::_process_value($v));
+        }
+      }
+       
+      $value .= '}';
+    }
+    
+    return $value;
   }
 
   private static function quote_except($key, $value)
