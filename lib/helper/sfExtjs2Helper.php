@@ -24,6 +24,23 @@
  *                   07.15.2007 Kubens:
  *                                         - created
  */
+
+class sfExtjsVar {
+
+  private $var  = '';
+  
+  public function __construct($var)
+  {
+    $this->var = $var;
+  }
+  
+  public function __toString()
+  {
+    return $this->var;
+  }
+  
+}
+
 class sfExtjs2Plugin {
 
   const LBR    = "\n";
@@ -110,11 +127,11 @@ class sfExtjs2Plugin {
     {
       #enables us to have empty keys removed
       if(is_null($value)) continue;
-
+      
       #quotes everything not in the quote_except value list
-      if(!is_array($value))
+      if( !is_array($value) && sfExtjs2Plugin::quote_except($key, $value) && !($value instanceof sfExtjsVar) )
       {
-        $attributes[$key] = (sfExtjs2Plugin::quote_except($key, $value) ? '\''.$value.'\'' : $value);
+        $attributes[$key] = '\''.$value.'\'';
       }
       else
       {
@@ -448,7 +465,7 @@ class sfExtjs2Plugin {
       
       foreach ($array_value as $key => $v)
       {
-        if (!is_array($v) && ($v != 'true') && ($v != 'false'))
+        if (!is_array($v) && sfExtjs2Plugin::quote_except($key, $v) && !($v instanceof sfExtjsVar))
         {
           $value .= sprintf('%s%s:\'%s\'', ($value === '{' ? '' : ','), $key, sfExtjs2Plugin::_process_value($v));
         }
