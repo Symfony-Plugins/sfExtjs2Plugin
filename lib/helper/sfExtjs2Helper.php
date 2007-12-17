@@ -162,7 +162,7 @@ class sfExtjs2Plugin {
     {
       if (array_key_exists($attribute, $attributes['attributes']))
       {
-        $attributes['attributes'][$attribute] = sprintf('[%s]', implode(',',$attributes['attributes'][$attribute]));
+        $attributes['attributes'][$attribute] = sprintf('[%s]', sfExtjs2Plugin::_build_attributes($attributes['attributes'][$attribute]));
       }
     }
 
@@ -452,7 +452,14 @@ class sfExtjs2Plugin {
     $attributes = '';
     foreach ($merged_attributes as $key => $value)
     {
-      $attributes .= sprintf('%s%s:%s', ($attributes === '' ? '' : ','), $key, sfExtjs2Plugin::_quote($key, $value));
+      if (!is_numeric($key))
+      {
+        $attributes .= sprintf('%s%s:%s', ($attributes === '' ? '' : ','), $key, sfExtjs2Plugin::_quote($key, $value));
+      } 
+      else 
+      {
+        $attributes .= sprintf('%s%s', ($attributes === '' ? '' : ','), sfExtjs2Plugin::_quote($key, $value));
+      }
     }
 
     return $attributes;
@@ -469,23 +476,16 @@ class sfExtjs2Plugin {
       $attribute = '';
       foreach ($value as $k => $v)
       {
-        // quote everything except:
-        //  values that are arrays
-        //  values that are sfExtjs2Var
-        //  values and keys that are listed in sf_extjs2_quote_except
-        if (!is_array($v) && !$v instanceof sfExtjs2Var && sfExtjs2Plugin::_quote_except($k, $v))
-        {
-          $attribute .= sprintf('%s%s:\'%s\'', ($attribute === '' ? '' : ','), $k, sfExtjs2Plugin::_quote($k, $v));
-        }
-        else
-        {
-          $attribute .= sprintf('%s%s:%s', ($attribute === '' ? '' : ','), $k, sfExtjs2Plugin::_quote($k, $v));
-        }
+        $attribute .= sprintf('%s%s:%s', ($attribute === '' ? '' : ','), $k, sfExtjs2Plugin::_quote($k, $v));
       }
       
       $attribute = sprintf('{%s}', $attribute); 
     }
     else {
+      // quote everything except:
+      //  values that are arrays
+      //  values that are sfExtjs2Var
+      //  values and keys that are listed in sf_extjs2_quote_except
       if (!$value instanceof sfExtjs2Var && sfExtjs2Plugin::_quote_except($key, $value)) 
       {
         $attribute = '\''.$value.'\'';
