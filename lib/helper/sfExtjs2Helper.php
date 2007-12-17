@@ -4,8 +4,10 @@
  * @plugin           sfExtjs2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
  * @author           Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>
- * @version          0.0.23
- * @last modified    11.22.2007 Kubens:
+ * @version          0.0.27
+ * @last modified    12.15.2007 Kubens:
+ * 										- Overworked quoting logic 
+ *                   11.22.2007 Kubens:
  * 										- Added features to create application 
  * 										- Added parameters support for Ext.object constructors
  * 									 11.17.2007 Kubens:
@@ -154,25 +156,13 @@ class sfExtjs2Plugin {
       $attributes['attributes'] = $tmp;
     }
 
-    # quote handling
-    # make it easier on us so not so much escaping in the attibutes setup
-    foreach ($attributes['attributes'] as $key => $value)
-    {
-      # enables us to have empty keys removed
-      if(is_null($value)) continue;
-      
-      # save attribute
-      $attributes['attributes'][$key] = $value;
-    }
-
     # list attributes must defined as an Javascript array
     # therefore all list attributes must be rendered as [attributeA, attributeB, attributeC]
-    foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute)
+    foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute) 
     {
-      if (is_array($attributes) && array_key_exists($attribute, $attributes['attributes']))
+      if (array_key_exists($attribute, $attributes['attributes']))
       {
-        $attStr = implode(',',$attributes['attributes'][$attribute]);
-        $attributes['attributes'][$attribute] = (sfExtjs2Plugin::_quote_except($attribute, null) ? '['.$attStr.']' : '{'.$attStr.'}');
+        $attributes['attributes'][$attribute] = sprintf('[%s]', implode(',',$attributes['attributes'][$attribute]));
       }
     }
 
@@ -307,12 +297,7 @@ class sfExtjs2Plugin {
     $source .= sprintf("%s.%s = Ext.extend(%s, {%s", $namespace, $classname, $extend, sfExtjs2Plugin::LBR);
 
     // write attributes
-    $i = 0;
-    foreach ($attributes as $key => $value)
-    {
-      $i++;
-      $source .= sprintf('%s: %s%s', $key, $value, $i < count($attributes) ? sfExtjs2Plugin::LBR_CM : sfExtjs2Plugin::LBR );
-    }
+    $source .= sfExtjs2Plugin::_build_attributes($attributes);
 
     echo $source;
   }
@@ -423,7 +408,7 @@ class sfExtjs2Plugin {
               );
     $source = sprintf("function (%s) { %s }", is_array($attributes) && array_key_exists('parameters', $attributes) ? $attributes['parameters'] : '', $source);
 
-    return $source;
+    return new sfExtjs2Var($source);
   }
 
   /**
@@ -484,6 +469,10 @@ class sfExtjs2Plugin {
       $attribute = '';
       foreach ($value as $k => $v)
       {
+        // quote everything except:
+        //  values that are arrays
+        //  values that are sfExtjs2Var
+        //  values and keys that are listed in sf_extjs2_quote_except
         if (!is_array($v) && !$v instanceof sfExtjs2Var && sfExtjs2Plugin::_quote_except($k, $v))
         {
           $attribute .= sprintf('%s%s:\'%s\'', ($attribute === '' ? '' : ','), $k, sfExtjs2Plugin::_quote($k, $v));
@@ -497,7 +486,7 @@ class sfExtjs2Plugin {
       $attribute = sprintf('{%s}', $attribute); 
     }
     else {
-      if (!$value instanceof sfExtjs2Var || !sfExtjs2Plugin::_quote_except($key, $value)) 
+      if (!$value instanceof sfExtjs2Var && sfExtjs2Plugin::_quote_except($key, $value)) 
       {
         $attribute = '\''.$value.'\'';
       }
@@ -519,33 +508,30 @@ class sfExtjs2Plugin {
   {
     $quoteExcept = sfConfig::get('sf_extjs2_quote_except');
 
-    if (is_int($key))
+    if (is_int($key) || is_int($value))
     {
       return false;
     }
-    else
+
+    $listAttributes = sfConfig::get('sf_extjs2_list_attributes');
+    if (in_array($key, $listAttributes)) 
     {
-      foreach ($quoteExcept['key'] as $except)
+      return false;
+    }
+
+    foreach ($quoteExcept['key'] as $except)
+    {
+      if ($key == $except)
       {
-        if ($key == $except)
-        {
-          return false;
-        }
+        return false;
       }
     }
 
-    if (is_int($value))
+    foreach ($quoteExcept['value'] as $except)
     {
-      return false;
-    }
-    else
-    {
-      foreach ($quoteExcept['value'] as $except)
+      if (substr($value, 0, strlen($except)) == $except)
       {
-        if (substr($value, 0, strlen($except)) == $except)
-        {
-          return false;
-        }
+        return false;
       }
     }
 
