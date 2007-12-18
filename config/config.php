@@ -57,7 +57,7 @@ sfConfig::set('sf_extjs2_spacer', '/site.img/spacer.gif');
 #
 # attributes which must handled as array
 #
-sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons', 'defaults', 'plugins', 'cm', 'ds', 'view', 'tbar', 'bbar'));
+sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons', 'plugins', 'cm', 'ds', 'view', 'tbar', 'bbar'));
 #
 # mapping plugin method against class
 #

@@ -3,27 +3,33 @@
 /**
  * @plugin           sfExtjs2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
- * @author           Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>
- * @version          0.0.27
- * @last modified    12.15.2007 Kubens:
- * 										- Overworked quoting logic 
+ * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net> 
+ * @version          0.0.29
+ * @last modified    12.17.2007 Leon:
+ *                    - handling of inner (recursive) arrays (see items => array(array(...), array(...))
+ *                   12.17.2007 Kubens:
+ *                    - Added handling of boolean values
+ *                    - Fixed quoting logic for beginClass
+ *                    - Fixed quoting logic for beginApplication
+ *                   12.15.2007 Kubens:
+ *                     - Overworked quoting logic 
  *                   11.22.2007 Kubens:
- * 										- Added features to create application 
- * 										- Added parameters support for Ext.object constructors
- * 									 11.17.2007 Kubens:
- * 										- Added features to create custom classes and custom methods
- * 									 11.12.2007	Kubens: 
- * 										- Fixed loading order of adapters. If adapters are used then it is important to load 
- * 											adapters and coresponding files before ext-all.js
- * 									  - Overworked: load method. Adapters and themes are setuped in config.php
- * 										- Overworked: constructor. If no adapter or theme is passed then default
- * 											settings from config.php will used 
- * 									 11.07.2007 KRavEN: 
- * 										- Fixed the adapter includes to load all required files in the correct order
- *                      moved ext-base into adapters, pass ext as adapter for standalone
- *                      changed all javascript to load first so they will come before files specified in view.yml
+ *                     - Added features to create application 
+ *                     - Added parameters support for Ext.object constructors
+ *                    11.17.2007 Kubens:
+ *                     - Added features to create custom classes and custom methods
+ *                    11.12.2007  Kubens: 
+ *                     - Fixed loading order of adapters. If adapters are used then it is important to load 
+ *                       adapters and coresponding files before ext-all.js
+ *                     - Overworked: load method. Adapters and themes are setuped in config.php
+ *                     - Overworked: constructor. If no adapter or theme is passed then default
+ *                       settings from config.php will used 
+ *                    11.07.2007 Benjamin: 
+ *                     - Fixed the adapter includes to load all required files in the correct order
+ *                       moved ext-base into adapters, pass ext as adapter for standalone
+ *                       changed all javascript to load first so they will come before files specified in view.yml
  *                   07.15.2007 Kubens: 
- * 										- created
+ *                     - created
  */
 class sfExtjs2Plugin {
 
@@ -115,7 +121,7 @@ class sfExtjs2Plugin {
    *   $sfExtjs2Plugin->Object(array
    *   (
    *     'name'       => 'string',      // option to render Javascript variable
-   *     'attributes' => array					// attributes for Ext constructor
+   *     'attributes' => array          // attributes for Ext constructor
    *     (
    *       'id'       => 'id',
    *       'renderTo' => 'document.body',
@@ -125,17 +131,16 @@ class sfExtjs2Plugin {
    *         $sfExtjs2Plugin->Object(array('title' => '"Object B"'))
    *       )
    *     ),
-   * 		 'parameters' => array
-   * 		 (
-   * 		   'parameter1', 
-   * 			 'parameter2'
-   * 		 )
+   *      'parameters' => array
+   *      (
+   *        'parameter1', 
+   *        'parameter2'
+   *      )
    *   ));
    *
    * @param string class
    * @param array attributes
-   * @return string Javascript source of Extjs2.class
-   *
+   * @return string source
    */
   public static function getExtObject($class, $attributes = array())
   {
@@ -197,8 +202,7 @@ class sfExtjs2Plugin {
    * @param array attributes
    * @param array config
    * @param array parameters
-   * @return string Javascript source of Extjs2.class
-   *
+   * @return string source
    */
   public static function getExtObjectComponent($attributes = array(), $config = array(), $parameters = array())
   {
@@ -250,6 +254,7 @@ class sfExtjs2Plugin {
   /**
    * writes opening tag for javascript
    *
+   * @return string source
    */
   public function begin()
   {
@@ -263,6 +268,7 @@ class sfExtjs2Plugin {
   /**
    * writes closing tag for javascript
    *
+   * @return Javascript source
    */
   public function end()
   {
@@ -279,7 +285,7 @@ class sfExtjs2Plugin {
    * @param string classname
    * @param string extend
    * @param array attributes
-   *
+   * @return string source
    */
   public function beginClass($namespace = null, $classname = null, $extend = null, $attributes = array())
   {
@@ -321,7 +327,7 @@ class sfExtjs2Plugin {
    * @param attributes['name']
    * @param attributes['private']
    * @param attributes['public']
-   * @return Javascript source
+   * @return string source
    */
   public function beginApplication($attributes = array())
   {
@@ -331,7 +337,7 @@ class sfExtjs2Plugin {
     {
       foreach ($attributes['private'] as $key => $value)
       {
-        $sourcePrivate .= sprintf('%svar %s = %s;', sfExtjs2Plugin::LBR, $key, $value);
+        $sourcePrivate .= sprintf('%svar %s = %s;', sfExtjs2Plugin::LBR, $key, sfExtjs2Plugin::_quote($key, $value));
       }
     }
 
@@ -339,12 +345,8 @@ class sfExtjs2Plugin {
     $sourcePublic = '';
     if (array_key_exists('public', $attributes))
     {
-      $i = 0;
-      foreach ($attributes['public'] as $key => $value)
-      {
-        $i++;
-        $sourcePublic .= sprintf('%s%s: %s%s', sfExtjs2Plugin::LBR, $key, $value, $i < count($attributes['public']) ? ',' : '' );
-      }
+      // write attributes
+      $sourcePublic .= sfExtjs2Plugin::_build_attributes($attributes['public']);
     }
 
     // write application syntax
@@ -372,6 +374,21 @@ class sfExtjs2Plugin {
     $source .= sprintf("}}()%s", sfExtjs2Plugin::LBR_SM);
 
     echo $source;
+  }
+
+  /**
+   * returns source of custom class
+   *
+   * @param string classname
+   * @package array attributes
+   * @return string source
+   */
+  public function customClass($classname, $attributes = array())
+  {
+    $source  = '';
+    $source .= $this->getExtObjectComponent($attributes, array('attributes'=>array(), 'class'=>$classname));
+
+    return $source;
   }
 
   /**
@@ -412,21 +429,6 @@ class sfExtjs2Plugin {
   }
 
   /**
-   * returns source of custom class
-   *
-   * @param string classname
-   * @package array attributes
-   * @return Javascript string source
-   */
-  public function customClass($classname, $attributes = array())
-  {
-    $source  = '';
-    $source .= $this->getExtObjectComponent($attributes, array('attributes'=>array(), 'class'=>$classname));
-
-    return $source;
-  }
-
-  /**
    * Build attributes based on custom attributes and default attributes.
    * Custom attributes and default attributes will merged.
    * Custom attributes overwrites default attributes.
@@ -443,7 +445,6 @@ class sfExtjs2Plugin {
    * @param array custom attributes
    * @param array default attributes
    * @return string merged attributes
-   *
    */
   private static function _build_attributes ($custom_attributes = array(), $default_attributes = array())
   {
@@ -466,8 +467,14 @@ class sfExtjs2Plugin {
   }
 
   /**
+   * quotes everything except:
+   *   values that are arrays
+   *   values that are sfExtjs2Var
+   *   values and keys that are listed in sf_extjs2_quote_except
+   *   
+   * @param string key
    * @param string value
-   * @return string Javascript source
+   * @return string attribute
    */  
   private static function _quote($key, $value)
   {
@@ -479,30 +486,30 @@ class sfExtjs2Plugin {
         $attribute .= sprintf('%s%s:%s', ($attribute === '' ? '' : ','), $k, sfExtjs2Plugin::_quote($k, $v));
       }
       
-      $attribute = sprintf('{%s}', $attribute); 
+      $attribute = sprintf('{%s}', $attribute);
+      return $attribute;
     }
-    else {
-      // quote everything except:
-      //  values that are arrays
-      //  values that are sfExtjs2Var
-      //  values and keys that are listed in sf_extjs2_quote_except
-      if (!$value instanceof sfExtjs2Var && sfExtjs2Plugin::_quote_except($key, $value)) 
-      {
-        $attribute = '\''.$value.'\'';
-      }
-      else 
-      {
-        $attribute = $value;
-      }
-    }    
 
+    if (is_bool($value )) 
+    {
+      $attribute = $value ? 'true' : 'false';
+      return $attribute;
+    }
+    
+    if (!$value instanceof sfExtjs2Var && sfExtjs2Plugin::_quote_except($key, $value)) 
+    {
+      $attribute = '\''.$value.'\'';
+      return $attribute;
+    }
+
+    $attribute = $value;
     return $attribute;
   }
 
   /**
    * @param string key
    * @param string value
-   * @return bollean quote
+   * @return boolean quote
    */  
   private static function _quote_except($key, $value)
   {
@@ -546,7 +553,7 @@ class sfExtjs2Plugin {
  * @author           Leon van der Ree
  * @version          0.0.01
  * @last modified    12.13.2007 Leon: 
- * 										- created
+ *                     - created
  */
 class sfExtjs2Var {
 
