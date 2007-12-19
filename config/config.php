@@ -1,5 +1,6 @@
 <?php
-sfConfig::set('sf_extjs2_version', 'v0.27');
+sfConfig::set('sf_extjs2_version', 'v0.30');
+sfConfig::set('sf_extjs2_comment', true);
 #
 # array values that don't need quotes
 #
@@ -57,7 +58,7 @@ sfConfig::set('sf_extjs2_spacer', '/site.img/spacer.gif');
 #
 # attributes which must handled as array
 #
-sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons', 'plugins', 'cm', 'ds', 'view', 'tbar', 'bbar'));
+sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons', 'plugins', 'view', 'tbar', 'bbar'));
 #
 # mapping plugin method against class
 #

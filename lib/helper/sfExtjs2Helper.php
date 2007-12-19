@@ -4,8 +4,10 @@
  * @plugin           sfExtjs2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
  * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net> 
- * @version          0.0.29
- * @last modified    12.17.2007 Leon:
+ * @version          0.0.30
+ * @last modified    12.18.2007 Wolfgang
+ *                    - Added sf_extjs2_comment
+ *                   12.17.2007 Leon:
  *                    - handling of inner (recursive) arrays (see items => array(array(...), array(...))
  *                   12.17.2007 Kubens:
  *                    - Added handling of boolean values
@@ -165,7 +167,7 @@ class sfExtjs2Plugin {
     # therefore all list attributes must be rendered as [attributeA, attributeB, attributeC]
     foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute) 
     {
-      if (array_key_exists($attribute, $attributes['attributes']))
+      if (array_key_exists($attribute, $attributes['attributes'])  && !$attributes['attributes'][$attribute] instanceof sfExtjs2Var)
       {
         $attributes['attributes'][$attribute] = sprintf('[%s]', sfExtjs2Plugin::_build_attributes($attributes['attributes'][$attribute]));
       }
@@ -260,6 +262,7 @@ class sfExtjs2Plugin {
   {
     $source  = sfExtjs2Plugin::LBR;
     $source .= sprintf("<script type='text/javascript'>%s", sfExtjs2Plugin::LBR);
+    $source .= sfExtjs2Plugin::_comment(sprintf("%s// sfExtjs2Helper: %s%s", sfExtjs2Plugin::LBR, sfConfig::get('sf_extjs2_version'), sfExtjs2Plugin::LBR));
     $source .= sprintf("Ext.BLANK_IMAGE_URL = '%s'%s", sfConfig::get('sf_extjs2_spacer'), sfExtjs2Plugin::LBR_SM);
 
     echo $source;
@@ -296,10 +299,12 @@ class sfExtjs2Plugin {
     if ($this->namespace !== $namespace)
     {
       $this->namespace = $namespace;
+      $source .= sfExtjs2Plugin::_comment(sprintf("%s// namespace: %s%s", sfExtjs2Plugin::LBR, $namespace, sfExtjs2Plugin::LBR)); 
       $source .= sprintf("Ext.namespace('%s')%s", $namespace, sfExtjs2Plugin::LBR_SM);
     }
 
     // write class tag
+    $source .= sfExtjs2Plugin::_comment(sprintf("%s// class: %s.%s%s", sfExtjs2Plugin::LBR, $namespace, $classname, sfExtjs2Plugin::LBR));
     $source .= sprintf("%s.%s = Ext.extend(%s, {%s", $namespace, $classname, $extend, sfExtjs2Plugin::LBR);
 
     // write attributes
@@ -316,7 +321,7 @@ class sfExtjs2Plugin {
   public function endClass()
   {
     $source  = '';
-    $source .= sprintf("})%s", sfExtjs2Plugin::LBR_SM);
+    $source .= sprintf("})%s%s", sfExtjs2Plugin::LBR_SM, sfExtjs2Plugin::LBR_SM);
 
     echo $source;
   }
@@ -350,10 +355,13 @@ class sfExtjs2Plugin {
     }
 
     // write application syntax
-    $source = '';
-    $source = sprintf(
-      'var %s = function() { %s%sreturn {%s %s',
+    $source  = '';
+    $source .= sfExtjs2Plugin::_comment(sprintf("%s// application: %s%s", sfExtjs2Plugin::LBR, $attributes['name'], sfExtjs2Plugin::LBR));
+    $source .= sprintf(
+      'var %s = function() { %sreturn {%s%s %s %s',
       $attributes['name'],
+      sfExtjs2Plugin::LBR,
+      sfExtjs2Plugin::LBR,
       $sourcePrivate,
       $sourcePrivate != '' ? sfExtjs2Plugin::LBR : '',
       $sourcePublic,
@@ -371,7 +379,7 @@ class sfExtjs2Plugin {
   public function endApplication()
   {
     $source  = '';
-    $source .= sprintf("}}()%s", sfExtjs2Plugin::LBR_SM);
+    $source .= sprintf("%s}}()%s", sfExtjs2Plugin::LBR, sfExtjs2Plugin::LBR_SM);
 
     echo $source;
   }
@@ -448,9 +456,14 @@ class sfExtjs2Plugin {
    */
   private static function _build_attributes ($custom_attributes = array(), $default_attributes = array())
   {
-    $merged_attributes = array_merge($default_attributes, $custom_attributes);
-
     $attributes = '';
+
+    $merged_attributes = $default_attributes;
+    if (is_array($custom_attributes) && is_array($default_attributes))
+    {
+      $merged_attributes = array_merge($default_attributes, $custom_attributes);
+    }
+
     foreach ($merged_attributes as $key => $value)
     {
       if (!is_numeric($key))
@@ -543,6 +556,22 @@ class sfExtjs2Plugin {
     }
 
     return true;
+  }
+
+  /**
+   * @param string comment
+   * @return string comment
+   */  
+  private static function _comment($comment)
+  {
+    if (sfConfig::get('sf_extjs2_comment'))
+    {
+      return $comment;
+    }
+    else 
+    {
+      return '';
+    }
   }
 
 }
