@@ -1,5 +1,5 @@
 <?php
-sfConfig::set('sf_extjs2_version', 'v0.50');
+sfConfig::set('sf_extjs2_version', 'v0.51');
 sfConfig::set('sf_extjs2_comment', true);
 #
 # adapters
@@ -49,7 +49,7 @@ sfConfig::set('sf_extjs2_spacer', '/site.img/spacer.gif');
 #
 # attributes which must handled as array
 #
-sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons', 'plugins', 'view', 'tbar', 'bbar', 'fields'));
+sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'bbar', 'buttons', 'plugins', 'view', 'fields'));
 #
 # array values that don't need quotes
 #
@@ -85,6 +85,7 @@ sfConfig::set('sf_extjs2_classes',
     'Menu'           => 'Ext.menu.Menu',
     'Item'	  		   => 'Ext.menu.Item',   
     'CheckItem' 	   => 'Ext.menu.CheckItem',  
+    'Toolbar'        => 'Ext.Toolbar',
     'MenuButton'     => 'Ext.Toolbar.MenuButton',
     'KeyMap'         => 'Ext.KeyMap'
   )
@@ -247,6 +248,13 @@ sfConfig::set('Ext.menu.CheckItem',
   )
 );
 
+
+sfConfig::set('Ext.Toolbar',
+  array(
+    'class'       => 'Ext.Toolbar',
+    'attributes'  => array()
+  )
+);
 
 sfConfig::set('Ext.Toolbar.MenuButton',
   array(

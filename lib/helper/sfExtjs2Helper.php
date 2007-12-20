@@ -4,7 +4,7 @@
  * @plugin           sfExtjs2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
  * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>
- * @version          0.0.50
+ * @version          0.0.51
  * @last modified    12.19.2007 Wolfgang
  *                    - Added method asVar
  *                    - Added logic for anonymousClass
@@ -162,7 +162,7 @@ class sfExtjs2Plugin {
       $parameters = $attributes['parameters'];
       unset($attributes['parameters']);
     }
-  
+ 
     # syntax A is a shortform of syntax B
     # if syntax A is used then convert syntax A to syntax B
     if (is_array($attributes) && !array_key_exists('attributes', $attributes))
@@ -181,10 +181,10 @@ class sfExtjs2Plugin {
         $attributes['attributes'][$attribute] = sprintf('[%s]', sfExtjs2Plugin::_build_attributes($attributes['attributes'][$attribute]));
       }
     }
-  
+
     // get source of component
     $source = call_user_func(array('sfExtjs2Plugin', 'getExtObjectComponent'), $attributes['attributes'], sfConfig::get($class), $parameters);
-  
+
     // if 'name' is assigned then we must render
     // either a Javascript variable or an attribute of this
     if (is_array($attributes) && array_key_exists('name', $attributes))
@@ -243,7 +243,7 @@ class sfExtjs2Plugin {
         $source = sprintf(
           'new %s (%s%s%s)',
           $config['class'],
-          $parameters != '' ? $parameters : '',
+          $parameters != '' ? '['.$parameters.']' : '',
           $parameters != '' && $attributes != '' ? ',' : '',
           $attributes
         );
