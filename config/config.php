@@ -1,15 +1,6 @@
 <?php
-sfConfig::set('sf_extjs2_version', 'v0.30');
+sfConfig::set('sf_extjs2_version', 'v0.50');
 sfConfig::set('sf_extjs2_comment', true);
-#
-# array values that don't need quotes
-#
-sfConfig::set('sf_extjs2_quote_except', 
-  array(
-    'value' => array('true', 'false', 'new Ext.', 'function', 'Ext.'),
-    'key'   => array('renderer', 'store', 'defaults', 'plugins', 'cm', 'ds', 'view', 'tbar', 'bbar')
-  )
-);
 #
 # adapters
 #
@@ -58,34 +49,44 @@ sfConfig::set('sf_extjs2_spacer', '/site.img/spacer.gif');
 #
 # attributes which must handled as array
 #
-sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons', 'plugins', 'view', 'tbar', 'bbar'));
+sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'buttons', 'plugins', 'view', 'tbar', 'bbar', 'fields'));
+#
+# array values that don't need quotes
+#
+sfConfig::set('sf_extjs2_quote_except', 
+  array(
+    'value' => array('true', 'false', 'new Ext.', 'function', 'Ext.'),
+    'key'   => array('renderer', 'store', 'defaults', 'plugins', 'cm', 'ds', 'view', 'tbar', 'bbar')
+  )
+);
 #
 # mapping plugin method against class
 #
 sfConfig::set('sf_extjs2_classes',
   array(
     // data
-    'JsonReader'   => 'Ext.data.JsonReader',
-    'Store'        => 'Ext.data.Store',
-    'HttpProxy'    => 'Ext.data.HttpProxy',
+    'JsonReader'     => 'Ext.data.JsonReader',
+    'Store'          => 'Ext.data.Store',
+    'HttpProxy'      => 'Ext.data.HttpProxy',
     // widgets
-    'BoxComponent' => 'Ext.BoxComponent',
-    'Button'       => 'Ext.Button',
-    'GridPanel'    => 'Ext.grid.GridPanel',
-    'ColumnModel'  => 'Ext.grid.ColumnModel',
-    'Panel'        => 'Ext.Panel',
-    'TabPanel'     => 'Ext.TabPanel',
-    'Viewport'     => 'Ext.Viewport',
-    'Window'       => 'Ext.Window',
-    'FormPanel'    => 'Ext.FormPanel',
-    'DateField'    => 'Ext.form.DateField',
-    'TextField'    => 'Ext.form.TextField',
-    'TimeField'    => 'Ext.form.TimeField',
-    'HtmlEditor'   => 'Ext.form.HtmlEditor',
-    'Menu'         => 'Ext.menu.Menu',
-    'Item'	  		 => 'Ext.menu.Item',   
-    'CheckItem' 	 => 'Ext.menu.CheckItem',  
-    'MenuButton'   => 'Ext.Toolbar.MenuButton'
+    'BoxComponent'   => 'Ext.BoxComponent',
+    'Button'         => 'Ext.Button',
+    'GridPanel'      => 'Ext.grid.GridPanel',
+    'ColumnModel'    => 'Ext.grid.ColumnModel',
+    'Panel'          => 'Ext.Panel',
+    'TabPanel'       => 'Ext.TabPanel',
+    'Viewport'       => 'Ext.Viewport',
+    'Window'         => 'Ext.Window',
+    'FormPanel'      => 'Ext.FormPanel',
+    'DateField'      => 'Ext.form.DateField',
+    'TextField'      => 'Ext.form.TextField',
+    'TimeField'      => 'Ext.form.TimeField',
+    'HtmlEditor'     => 'Ext.form.HtmlEditor',
+    'Menu'           => 'Ext.menu.Menu',
+    'Item'	  		   => 'Ext.menu.Item',   
+    'CheckItem' 	   => 'Ext.menu.CheckItem',  
+    'MenuButton'     => 'Ext.Toolbar.MenuButton',
+    'KeyMap'         => 'Ext.KeyMap'
   )
 );
 #
@@ -253,5 +254,22 @@ sfConfig::set('Ext.Toolbar.MenuButton',
     'attributes'  => array()
   )
 );
+
+
+sfConfig::set('Ext.KeyMap',
+  array(
+    'class'       => 'Ext.KeyMap',
+    'attributes'  => array()
+  )
+);
+
+
+sfConfig::set('anonymousClass',
+  array(
+    'class'       => 'anonymousClass',
+    'attributes'  => array()
+  )
+);
+
 
 ?>
