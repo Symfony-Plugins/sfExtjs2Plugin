@@ -460,7 +460,7 @@ class sfExtjs2Plugin {
    * @param array attributes
    * @return string source
    */
-  public static function method($attributes = array())
+  public static function asMethod($attributes = array())
   {
     $source = is_array($attributes) && array_key_exists('source', $attributes) ? $attributes['source'] : $attributes;
     $source = preg_replace_callback(

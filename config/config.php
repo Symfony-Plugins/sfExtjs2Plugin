@@ -1,5 +1,5 @@
 <?php
-sfConfig::set('sf_extjs2_version', 'v0.51');
+sfConfig::set('sf_extjs2_version', 'v0.52');
 sfConfig::set('sf_extjs2_comment', true);
 #
 # adapters
@@ -87,6 +87,8 @@ sfConfig::set('sf_extjs2_classes',
     'CheckItem' 	   => 'Ext.menu.CheckItem',  
     'Toolbar'        => 'Ext.Toolbar',
     'MenuButton'     => 'Ext.Toolbar.MenuButton',
+    'Fill'           => 'Ext.Toolbar.Fill',
+    'MessageBox'     => 'Ext.MessageBox',
     'KeyMap'         => 'Ext.KeyMap'
   )
 );
@@ -259,6 +261,21 @@ sfConfig::set('Ext.Toolbar',
 sfConfig::set('Ext.Toolbar.MenuButton',
   array(
     'class'       => 'Ext.Toolbar.MenuButton',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.Toolbar.Fill',
+  array(
+    'class'       => 'Ext.Toolbar.Fill',
+    'attributes'  => array()
+  )
+);
+
+
+sfConfig::set('Ext.MessageBox',
+  array(
+    'class'       => 'Ext.MessageBox',
     'attributes'  => array()
   )
 );
