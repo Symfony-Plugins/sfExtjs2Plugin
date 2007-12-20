@@ -4,7 +4,7 @@
  * @plugin           sfExtjs2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
  * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>
- * @version          0.0.51
+ * @version          0.0.54
  * @last modified    12.19.2007 Wolfgang
  *                    - Added method asVar
  *                    - Added logic for anonymousClass
