@@ -1,5 +1,5 @@
 <?php
-sfConfig::set('sf_extjs2_version', 'v0.54');
+sfConfig::set('sf_extjs2_version', 'v0.56');
 sfConfig::set('sf_extjs2_comment', true);
 #
 # adapters

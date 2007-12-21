@@ -5,7 +5,11 @@
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
  * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>
  * @version          0.0.54
- * @last modified    12.19.2007 Wolfgang
+ * @last modified    12.20.2007 Wolfgang
+ * 										- Added method asListener
+ * 										- Renamed method customClass into asCustomClass
+ * 										- Renamed method anonymousClass into asAnonymousClass
+ * 									 12.19.2007 Wolfgang
  *                    - Added method asVar
  *                    - Added logic for anonymousClass
  *                    - Changed parameters handling 
@@ -110,7 +114,7 @@ class sfExtjs2Plugin {
    * Creates Javascript source for Extjs2.class
    *
    * Usage:
-   *
+   * 
    *   Syntax A = short form without any options
    *   $sfExtjs2Plugin->Object(array
    *   (
@@ -122,7 +126,7 @@ class sfExtjs2Plugin {
    *       $sfExtjs2Plugin->Object(array('title'=>'Object B'))
    *     )
    *   ));
-   *   
+   * 
    *   => new Object({id: 'id', renderTo: document.body, items: [new Object(title: 'Object A'), new Object(title: 'Object B')]})   
    *
    *
@@ -298,12 +302,13 @@ class sfExtjs2Plugin {
 
   /**
    * writes closing tag for javascript
-   *
+   *   * 
+   * @param  string source
    * @return Javascript source
    */
-  public function end()
+  public function end($source = '')
   {
-    $source  = sfExtjs2Plugin::LBR;
+    $source  = sprintf("%s%s%s", sfExtjs2Plugin::LBR, $source, $source != '' ? sfExtjs2Plugin::LBR : '');
     $source .= sprintf("</script>%s", sfExtjs2Plugin::LBR);
 
     echo $source;
@@ -370,7 +375,7 @@ class sfExtjs2Plugin {
      {
        foreach ($attributes['private'] as $key => $value)
        {
-         $sourcePrivate .= sprintf('%svar %s = %s;', sfExtjs2Plugin::LBR, $key, sfExtjs2Plugin::_quote($key, $value));
+         $sourcePrivate .= sprintf("%svar %s = %s;", sfExtjs2Plugin::LBR, $key, sfExtjs2Plugin::_quote($key, $value));
        }
      }
 
@@ -414,36 +419,97 @@ class sfExtjs2Plugin {
 
   /**
    * returns source of custom class
+   * 
+   * Usage:
+   * 
+   * 		$sfExtjs2Plugin->customClass('Ext.app.symfony.ModuleA', array('title' => 'Module A', 'closable' => false));
+   * 
+   * 		=> new Ext.app.symfony.ModuleA ({title:'Module A',closable:false})
    *
    * @param string classname
    * @package array attributes
    * @return string source
    */
-  public function customClass($classname, $attributes = array())
+  public function asCustomClass($classname, $attributes = array())
   {
     $source  = '';
     $source .= $this->getExtObjectComponent($attributes, array('attributes'=>array(), 'class'=>$classname));
 
-    return $source;
+    return new sfExtjs2Var($source);
   }
 
   /**
-   * returns source of custom class
+   * returns source of anonymous class
+   * 
+   * Usage:
+   * 
+   * 		$sfExtjs2Plugin->asAnonymousClass(array('name'=>'id','mapping'=>'id','type'=>'int'));
+   * 
+   * 		=> {name: 'id', mapping: 'id', type: 'int'}
    *
    * @param string classname
    * @package array attributes
    * @return string source
    */
-  public function anonymousClass($attributes = array())
+  public function asAnonymousClass($attributes = array())
   {
     $source  = '';
     $source .= $this->getExtObject('anonymousClass', $attributes);
 
-    return $source;
+    return new sfExtjs2Var($source);
   }
 
   /**
-   * returns string as instance of sfExtjs2Var
+   * returns source of anonymous listener
+   * 
+   * Usage:
+   * 
+   * 		$sfExtjs2Plugin->asListener(array
+   * 		(
+   *      'rowcontextmenu' => $sfExtjs2Plugin->asMethod(array
+   *      (
+   *        'parameters' => 'grid, rowIndex, e',
+   *        'source'     => "
+   *          
+   * 					// ensure that row could reselect
+   *          // if onLoad event of data store occurs
+   *          grid.selectedRowIndex = rowIndex;
+   *          grid.getSelectionModel().selectRow(rowIndex);
+   *
+   *          // prevent browser default context menu
+   *          e.stopEvent();
+   * 
+   *          // show context menu
+   *          var coords = e.getXY();
+   *          grid.cmenu.showAt([coords[0], coords[1]]);
+   *        "
+   *      ))
+   *    ))
+   *
+   * @param string classname
+   * @package array attributes
+   * @return string source
+   */
+  public function asListener($attributes = array())
+  {
+    $source = '';
+    foreach ($attributes as $key => $value) 
+    {
+      $source .= sprintf
+      (
+        '%s"%s":%s',
+        $source != '' ? ',' : '',
+        $key,
+        $value 
+      );    
+    }
+    $source = sprintf('{%s}', $source);
+    
+    return new sfExtjs2Var($source);
+  }
+    
+  /**
+   * returns string the passed string without additional quoting
    *
    * @param string var
    * @return sfExtjs2Var var
@@ -454,9 +520,20 @@ class sfExtjs2Plugin {
   }
 
   /**
-   * returns source for method
-   * including output of evaled php code
-   *
+   * returns source for method including output of evaled php code
+   * 
+   * Usage:
+   * 
+   *    Syntax A = short form without any options
+   *    $sfExtjs2Plugin->asMethod('alert("foo");');
+   * 
+   * 		=> function() { alert("foo"); }
+   *    
+   *    Syntax B = short form with parameters
+   *    $sfExtjs2Plugin->asMethod(array('parameters' => 'msg', 'source' => 'alert(msg)');
+   * 
+   * 		=> function(msg) { alert(msg); }
+   * 
    * @param array attributes
    * @return string source
    */
