@@ -3,9 +3,20 @@
 /**
  * @plugin           sfExtjs2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
- * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>
- * @version          0.0.54
- * @last modified    12.20.2007 Wolfgang
+ * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Jerome Macias
+ * @version          0.0.58
+ * @last modified    
+ *                   12.26.2007 Jerome
+ *                    - fixed method getExtObject when we want to assign a name attribute and we don't specify "attributes" key in $attributes param
+ *                    - Fixed order for display private attributes in method beginApplication
+ *                    - Added datas parameter for method getExtObjectComponent
+ *                    - Added method _build_datas
+ *                    - Replaced all call_user_func and sfExtjs2Plugin:: by self::
+ *                    - Added possibility to load js or/and css addons/plugins
+ *                    - Added possibility to set name for a function in method asMethod
+ *                    - Replaced some ',' by self::LBR_CM
+ *                    - Added method initApplication
+ *                   12.20.2007 Wolfgang
  * 										- Added method asListener
  * 										- Renamed method customClass into asCustomClass
  * 										- Renamed method anonymousClass into asAnonymousClass
@@ -47,10 +58,13 @@ class sfExtjs2Plugin {
   const LBR_CM = ",\n";
   const LBR_SM = ";\n";
   
-  private $items     = array();
-  private $adapter   = ''; // current adapter
-  private $theme     = ''; // current theme
-  private $namespace = ''; // current namespace
+  private 
+    $items     = array(),
+    $namespace = '', // current namespace
+    $options   = array('theme' => '', // current theme
+                       'adapter' => ''), // current adapter
+    $addons    = array('css' => array(), // current js plugins
+                       'js' => array()); // current css addons
   
   /**
    * Creates an instance of sfExtjs2Plugin.
@@ -62,15 +76,54 @@ class sfExtjs2Plugin {
    *                           (
    *                             'adapter' => 'jquery', // config.sf_extjs2_adapters
    *                             'theme'   => 'gray'    // config.sf_extjs2_themes
+   *                           ),
+   *                           array
+   *                           (
+   *                             'js' => '/js/myExtjsPlugin.js',
+   *                             'css' => '/css/symfony-extjs.css'
    *                           )
    *                         );
    *
    * @param array options
    */
-  public function __construct($options = array())
+  public function __construct($options = array(), $addons = array())
   {
-    $this->adapter = is_array($options) && array_key_exists('adapter',$options) && array_key_exists($options['adapter'], sfConfig::get('sf_extjs2_adapters', array())) ? $options['adapter'] : sfConfig::get('sf_extjs2_default_adapter');
-    $this->theme   = is_array($options) && array_key_exists('theme',$options)   && array_key_exists($options['theme'],   sfConfig::get('sf_extjs2_themes', array()))   ? $options['theme']   : sfConfig::get('sf_extjs2_default_theme');
+    if ($options)
+    {
+      $this->setOptions($options);
+    }
+    
+    if ($addons)
+    {
+      $this->setAddons($addons);
+    }
+  }
+  
+  /**
+   * set theme and adapter
+   *
+   */
+  private function setOptions($options)
+  {
+    foreach ($this->options as $optName => $v)
+    {
+      $this->options[$optName] = isset($options[$optName]) && array_key_exists($options[$optName], sfConfig::get('sf_extjs2_'.$optName.'s', array())) ? $options[$optName] : sfConfig::get('sf_extjs2_default_'.$optName);
+    }
+  }
+  
+  /**
+   * set js and/or css addons
+   *
+   */  
+  private function setAddons($addons)
+  {
+    foreach ($this->addons as $type => $v)
+    {
+      if (array_key_exists($type, $addons))
+      {
+        $this->addons[$type] = is_array($addons[$type]) ? $addons[$type] : array($addons[$type]);
+      }
+    }
   }
 
   /**
@@ -84,6 +137,11 @@ class sfExtjs2Plugin {
    *                           (
    *                             'adapter' => 'jquery',
    *                             'theme'   => 'gray'
+   *                           ),
+   *                           array
+   *                           (
+   *                             'js' => '/js/myExtjsPlugin.js',
+   *                             'css' => '/css/symfony-extjs.css'
    *                           )
    *                         );
    *   $sfExtjs2Plugin->Window(
@@ -106,7 +164,7 @@ class sfExtjs2Plugin {
     if (is_array($classes) && array_key_exists($class, $classes))
     {
       $object = sfConfig::get($classes[$class]);
-      return sfExtjs2Plugin::getExtObject($object['class'], $attributes[0]);
+      return self::getExtObject($object['class'], $attributes[0]);
     }
   }
 
@@ -157,55 +215,78 @@ class sfExtjs2Plugin {
    * @param array attributes
    * @return string source
    */
-  public static function getExtObject($class, $attributes = array())
+  public static function getExtObject($class, $params = array())
   {
+    # name for var
+    $name = null;
+    if (is_array($params) && array_key_exists('name', $params))
+    {
+      $name = $params['name'];
+      unset($params['name']);
+    }
+    
+    // 'lbr' for a line break
+    $lbr = null;
+    if (is_array($params) && array_key_exists('lbr', $params))
+    {
+      $lbr = $params['lbr'];
+    }
+    
     # parameters for constructor
     $parameters = array();
-    if (is_array($attributes) && array_key_exists('parameters', $attributes))
+    if (is_array($params) && array_key_exists('parameters', $params))
     {
-      $parameters = $attributes['parameters'];
-      unset($attributes['parameters']);
+      $parameters = $params['parameters'];
+      unset($params['parameters']);
+    }
+    
+    # datas for constructor
+    $datas = array();
+    if (is_array($params) && array_key_exists('datas', $params))
+    {
+      $datas = $params['datas'];
+      unset($params['datas']);
     }
  
     # syntax A is a shortform of syntax B
     # if syntax A is used then convert syntax A to syntax B
-    if (is_array($attributes) && !array_key_exists('attributes', $attributes))
+    $attributes = array();
+    if (is_array($params))
     {
-      $tmp = $attributes;
-      $attributes = array();
-      $attributes['attributes'] = $tmp;
+      $attributes = array_key_exists('attributes', $params) ? $params['attributes'] : $params;
     }
   
     # list attributes must defined as an Javascript array
     # therefore all list attributes must be rendered as [attributeA, attributeB, attributeC]
+    
     foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute)
     {
-      if (array_key_exists($attribute, $attributes['attributes']) && !$attributes['attributes'][$attribute] instanceof sfExtjs2Var)
+      if (array_key_exists($attribute, $attributes) && !$attributes[$attribute] instanceof sfExtjs2Var)
       {
-        $attributes['attributes'][$attribute] = sprintf('[%s]', sfExtjs2Plugin::_build_attributes($attributes['attributes'][$attribute]));
+        $attributes[$attribute] = sprintf('[%s]', self::_build_attributes($attributes[$attribute]));
       }
     }
 
     // get source of component
-    $source = call_user_func(array('sfExtjs2Plugin', 'getExtObjectComponent'), $attributes['attributes'], sfConfig::get($class), $parameters);
+    $source = self::getExtObjectComponent($attributes, sfConfig::get($class), $parameters, $datas);
 
     // if 'name' is assigned then we must render
     // either a Javascript variable or an attribute of this
-    if (is_array($attributes) && array_key_exists('name', $attributes))
+    if ($name)
     {
       $source = sprintf
       (
         '%s%s = %s',
-        strpos($attributes['name'], 'this.') === false ? 'var ' : '',
-        $attributes['name'],
+        strpos($name, 'this.') === false ? 'var ' : '',
+        $name,
         $source
       );
     }
   
     // if 'lbr' assigned then we must render a line break
-    if (is_array($attributes) && array_key_exists('lbr', $attributes))
+    if ($lbr)
     {
-      $source .= $attributes['lbr'];
+      $source .= $lbr;
     }
   
     return $source;
@@ -219,19 +300,23 @@ class sfExtjs2Plugin {
    * @param array parameters
    * @return string source
    */
-  public static function getExtObjectComponent($attributes = array(), $config = array(), $parameters = array())
+  public static function getExtObjectComponent($attributes = array(), $config = array(), $parameters = array(), $datas = array())
   {
-    $attributes = sfExtjs2Plugin::_build_attributes($attributes, $config['attributes']);
+    $attributes = self::_build_attributes($attributes, $config['attributes']);
     $attributes = sprintf('%s', $attributes != '' ? '{'.$attributes.'}' : '');
   
-    $parameters = implode(',', $parameters);
+    $parameters = implode(self::LBR_CM, $parameters);
+    $datas = $config['class'] == 'anonymousClass' ? self::_build_datas($datas) : (!empty($datas) ? "'".implode("'".self::LBR_CM."'", $datas)."'" : '');
   
     switch ($config['class'])
     {
       case 'anonymousClass':
         $source = sprintf(
-          '%s%s',
-          $parameters != '' ? $parameters . ',' : '',
+          '%s%s%s%s%s',
+          $parameters,
+          $parameters != '' && $datas != '' ? ',' : '',
+          $datas,
+          $datas != '' && $attributes != '' ? ',' : '',
           $attributes
         );
         return $source;
@@ -245,10 +330,12 @@ class sfExtjs2Plugin {
 
       default:
         $source = sprintf(
-          'new %s (%s%s%s)',
+          'new %s (%s%s%s%s%s)',
           $config['class'],
           $parameters != '' ? '['.$parameters.']' : '',
-          $parameters != '' && $attributes != '' ? ',' : '',
+          $parameters != '' && $datas != '' ? ',' : '',
+          $datas,
+          $datas != '' && $attributes != '' ? ',' : '',
           $attributes
         );
         return $source;
@@ -266,22 +353,38 @@ class sfExtjs2Plugin {
 
     // add javascript sources for adapter
     $adapters = sfConfig::get('sf_extjs2_adapters', array());
-    foreach ($adapters[$this->adapter] as $file)
+    foreach ($adapters[$this->options['adapter']] as $file)
     {
-      $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). $file, 'first');
+      $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').$file, 'first');
     }
 
     // add javascript sources for ext all
-    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir'). 'ext-all.js', 'first');
+    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').'ext-all.js', 'first');
+    
+    if (array_key_exists('js', $this->addons))
+    {
+      foreach ($this->addons['js'] as $jsAddon)
+      {
+        $response->addJavascript($jsAddon, 'first');
+      }
+    }
 
     // add css sources for ext all
-    $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir'). 'ext-all.css', 'first');
+    $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir').'ext-all.css', 'first');
 
     // add css sources for theme
     $themes = sfConfig::get('sf_extjs2_themes', array());
-    foreach ($themes[$this->theme] as $file)
+    foreach ($themes[$this->options['theme']] as $file)
     {
-      $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir'). $file, 'first');
+      $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir').$file, 'first');
+    }
+    
+    if (array_key_exists('css', $this->addons))
+    {
+      foreach ($this->addons['css'] as $cssAddon)
+      {
+        $response->addStylesheet($cssAddon, 'first');
+      }
     }
   }
 
@@ -292,10 +395,10 @@ class sfExtjs2Plugin {
    */
   public function begin()
   {
-    $source  = sfExtjs2Plugin::LBR;
-    $source .= sprintf("<script type='text/javascript'>%s", sfExtjs2Plugin::LBR);
-    $source .= sfExtjs2Plugin::_comment(sprintf("%s// sfExtjs2Helper: %s%s", sfExtjs2Plugin::LBR, sfConfig::get('sf_extjs2_version'), sfExtjs2Plugin::LBR));
-    $source .= sprintf("Ext.BLANK_IMAGE_URL = '%s'%s", sfConfig::get('sf_extjs2_spacer'), sfExtjs2Plugin::LBR_SM);
+    $source  = self::LBR;
+    $source .= sprintf("<script type='text/javascript'>%s", self::LBR);
+    $source .= self::_comment(sprintf("%s// sfExtjs2Helper: %s%s", self::LBR, sfConfig::get('sf_extjs2_version'), self::LBR));
+    $source .= sprintf("Ext.BLANK_IMAGE_URL = '%s'%s", sfConfig::get('sf_extjs2_spacer'), self::LBR_SM);
   
     echo $source;
   }
@@ -308,8 +411,8 @@ class sfExtjs2Plugin {
    */
   public function end($source = '')
   {
-    $source  = sprintf("%s%s%s", sfExtjs2Plugin::LBR, $source, $source != '' ? sfExtjs2Plugin::LBR : '');
-    $source .= sprintf("</script>%s", sfExtjs2Plugin::LBR);
+    $source  = sprintf("%s%s%s", self::LBR, $source, $source != '' ? self::LBR : '');
+    $source .= sprintf("</script>%s", self::LBR);
 
     echo $source;
   }
@@ -332,16 +435,16 @@ class sfExtjs2Plugin {
     if ($this->namespace !== $namespace)
     {
       $this->namespace = $namespace;
-      $source .= sfExtjs2Plugin::_comment(sprintf("%s// namespace: %s%s", sfExtjs2Plugin::LBR, $namespace, sfExtjs2Plugin::LBR));
-      $source .= sprintf("Ext.namespace('%s')%s", $namespace, sfExtjs2Plugin::LBR_SM);
+      $source .= self::_comment(sprintf("%s// namespace: %s%s", self::LBR, $namespace, self::LBR));
+      $source .= sprintf("Ext.namespace('%s')%s", $namespace, self::LBR_SM);
     }
   
     // write class tag
-    $source .= sfExtjs2Plugin::_comment(sprintf("%s// class: %s.%s%s", sfExtjs2Plugin::LBR, $namespace, $classname, sfExtjs2Plugin::LBR));
-    $source .= sprintf("%s.%s = Ext.extend(%s, {%s", $namespace, $classname, $extend, sfExtjs2Plugin::LBR);
+    $source .= self::_comment(sprintf("%s// class: %s.%s%s", self::LBR, $namespace, $classname, self::LBR));
+    $source .= sprintf("%s.%s = Ext.extend(%s, {%s", $namespace, $classname, $extend, self::LBR);
   
     // write attributes
-    $source .= sfExtjs2Plugin::_build_attributes($attributes);
+    $source .= self::_build_attributes($attributes);
   
     echo $source;
   }
@@ -354,7 +457,7 @@ class sfExtjs2Plugin {
   public function endClass()
   {
     $source  = '';
-    $source .= sprintf("})%s%s", sfExtjs2Plugin::LBR_SM, sfExtjs2Plugin::LBR_SM);
+    $source .= sprintf("})%s%s", self::LBR_SM, self::LBR_SM);
 
     echo $source;
   }
@@ -375,7 +478,7 @@ class sfExtjs2Plugin {
      {
        foreach ($attributes['private'] as $key => $value)
        {
-         $sourcePrivate .= sprintf("%svar %s = %s;", sfExtjs2Plugin::LBR, $key, sfExtjs2Plugin::_quote($key, $value));
+         $sourcePrivate .= sprintf("%svar %s = %s;", self::LBR, $key, self::_quote($key, $value));
        }
      }
 
@@ -384,21 +487,20 @@ class sfExtjs2Plugin {
      if (array_key_exists('public', $attributes))
      {
        // write attributes
-       $sourcePublic .= sfExtjs2Plugin::_build_attributes($attributes['public']);
+       $sourcePublic .= self::_build_attributes($attributes['public']);
      }
 
      // write application syntax
      $source  = '';
-     $source .= sfExtjs2Plugin::_comment(sprintf("%s// application: %s%s", sfExtjs2Plugin::LBR, $attributes['name'], sfExtjs2Plugin::LBR));
+     $source .= self::_comment(sprintf("%s// application: %s%s", self::LBR, $attributes['name'], self::LBR));
      $source .= sprintf(
-       'var %s = function() { %sreturn {%s%s %s %s',
+       'var %s = function () { %s%sreturn {%s %s %s',
        $attributes['name'],
-       sfExtjs2Plugin::LBR,
-       sfExtjs2Plugin::LBR,
        $sourcePrivate,
-       $sourcePrivate != '' ? sfExtjs2Plugin::LBR : '',
+       $sourcePrivate != '' ? self::LBR : '',
+       self::LBR,
        $sourcePublic,
-       $sourcePublic != '' ? sfExtjs2Plugin::LBR : ''
+       $sourcePublic != '' ? self::LBR : ''
      );
 
      echo $source;
@@ -412,7 +514,33 @@ class sfExtjs2Plugin {
   public function endApplication()
   {
     $source  = '';
-    $source .= sprintf("%s}}()%s", sfExtjs2Plugin::LBR, sfExtjs2Plugin::LBR_SM);
+    $source .= sprintf("%s}}()%s", self::LBR, self::LBR_SM);
+  
+    echo $source;
+  }
+  
+  /**
+   * writes init application tag
+   * 
+   * Usage:
+   * 
+   *    $sfExtjs2Plugin->initApplication('App');
+   * 
+   *    => Ext.onReady(App.init, App);
+   * 
+   *    $sfExtjs2Plugin->initApplication('App', true, 'myInit');
+   * 
+   *    => Ext.onReady(App.myInit, App, true);
+   *
+   * @param string scope
+   * @param boolean override
+   * @param string fn
+   * @return string source
+   */
+  public function initApplication($scope, $override = false, $fn = 'init')
+  {
+    $source  = '';
+    $source .= sprintf("%sExt.onReady(%s.%s, %s%s)%s", self::LBR, $scope, $fn, $scope, $override ? ', true' : '', self::LBR_SM);
   
     echo $source;
   }
@@ -427,7 +555,7 @@ class sfExtjs2Plugin {
    * 		=> new Ext.app.symfony.ModuleA ({title:'Module A',closable:false})
    *
    * @param string classname
-   * @package array attributes
+   * @param array attributes
    * @return string source
    */
   public function asCustomClass($classname, $attributes = array())
@@ -448,7 +576,7 @@ class sfExtjs2Plugin {
    * 		=> {name: 'id', mapping: 'id', type: 'int'}
    *
    * @param string classname
-   * @package array attributes
+   * @param array attributes
    * @return string source
    */
   public function asAnonymousClass($attributes = array())
@@ -530,7 +658,7 @@ class sfExtjs2Plugin {
    * 		=> function() { alert("foo"); }
    *    
    *    Syntax B = short form with parameters
-   *    $sfExtjs2Plugin->asMethod(array('parameters' => 'msg', 'source' => 'alert(msg)');
+   *    $sfExtjs2Plugin->asMethod(array('parameters' => 'msg', 'source' => 'alert(msg)'));
    * 
    * 		=> function(msg) { alert(msg); }
    * 
@@ -539,13 +667,16 @@ class sfExtjs2Plugin {
    */
   public static function asMethod($attributes = array())
   {
+    $name = is_array($attributes) && array_key_exists('name', $attributes) ? $attributes['name'] : '';
+    $parameters = is_array($attributes) && array_key_exists('parameters', $attributes) ? $attributes['parameters'] : '';
+    
     $source = is_array($attributes) && array_key_exists('source', $attributes) ? $attributes['source'] : $attributes;
     $source = preg_replace_callback(
       '/(\<\?php)(.*?)(\?>)/si',
       array('self', '_methodEvalPHP'),
       $source
     );
-    $source = sprintf("function (%s) { %s }", is_array($attributes) && array_key_exists('parameters', $attributes) ? $attributes['parameters'] : '', $source);
+    $source = sprintf("function %s(%s) { %s }", $name, $parameters, $source);
   
     return new sfExtjs2Var($source);
   }
@@ -599,15 +730,47 @@ class sfExtjs2Plugin {
     {
       if (!is_numeric($key))
       {
-        $attributes .= sprintf('%s%s:%s', ($attributes === '' ? '' : ','), $key, sfExtjs2Plugin::_quote($key, $value));
+        $attributes .= sprintf('%s%s:%s', ($attributes === '' ? '' : self::LBR_CM), $key, self::_quote($key, $value));
       }
       else
       {
-        $attributes .= sprintf('%s%s', ($attributes === '' ? '' : ','), sfExtjs2Plugin::_quote($key, $value));
+        $attributes .= sprintf('%s%s', ($attributes === '' ? '' : self::LBR_CM), self::_quote($key, $value));
       }
     }
   
     return $attributes;
+  }
+  
+  private static function _build_datas ($custom_datas = array(), $isArray = false)
+  {
+    $curly = $isArray ? '[' : '{';
+    $datas = $curly.self::LBR;
+    $first = true;
+  
+    foreach ($custom_datas as $key => $value)
+    {
+      $final_value = '\''.$value.'\'';
+      if (is_array($value))
+      {
+        $final_value = self::_build_datas($value, $isArray ? false : true);
+      }
+      
+      if (!is_numeric($key))
+      {
+        $datas .= sprintf('%s%s:%s', ($first ? '' : self::LBR_CM), $key, $final_value);
+      }
+      else
+      {
+        $datas .= sprintf('%s%s', ($first ? '' : self::LBR_CM), $final_value);
+      }
+      
+      $first = false;
+    }
+    
+    $datas .= self::LBR;
+    $datas .= $isArray ? ']' : '}';
+    
+    return $datas;
   }
     
   /**
@@ -629,11 +792,11 @@ class sfExtjs2Plugin {
       {
         if (!is_numeric($k))
         {
-          $attribute .= sprintf('%s%s:%s', ($attribute === '' ? '' : ','), $k, sfExtjs2Plugin::_quote($k, $v));
+          $attribute .= sprintf('%s%s:%s', ($attribute === '' ? '' : ','), $k, self::_quote($k, $v));
         }
         else
         {
-          $attribute .= sprintf('%s%s', ($attribute === '' ? '' : ','), sfExtjs2Plugin::_quote($k, $v));
+          $attribute .= sprintf('%s%s', ($attribute === '' ? '' : ','), self::_quote($k, $v));
         }
       }
   
@@ -647,7 +810,7 @@ class sfExtjs2Plugin {
       return $attribute;
     }
   
-    if (!$value instanceof sfExtjs2Var && sfExtjs2Plugin::_quote_except($key, $value))
+    if (!$value instanceof sfExtjs2Var && self::_quote_except($key, $value))
     {
       $attribute = '\''.$value.'\'';
       return $attribute;
