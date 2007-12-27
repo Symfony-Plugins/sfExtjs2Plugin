@@ -6,6 +6,8 @@
  * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Jerome Macias
  * @version          0.0.58
  * @last modified    
+ *                   12.27.2007 Jerome
+ *                    - Added handling of null values
  *                   12.26.2007 Jerome
  *                    - fixed method getExtObject when we want to assign a name attribute and we don't specify "attributes" key in $attributes param
  *                    - Fixed order for display private attributes in method beginApplication
@@ -808,6 +810,11 @@ class sfExtjs2Plugin {
     {
       $attribute = $value ? 'true' : 'false';
       return $attribute;
+    }
+    
+    if (is_null($value ))
+    {
+      return 'null';
     }
   
     if (!$value instanceof sfExtjs2Var && self::_quote_except($key, $value))
