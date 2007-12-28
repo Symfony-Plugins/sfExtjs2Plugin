@@ -6,10 +6,14 @@
  * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Jerome Macias
  * @version          0.0.58
  * @last modified    
+ *                   12.28.2007 Jerome
+ *                    - Fixed method getExtObject
+ *                    - Added constants
+ *                    - Fixed method _build_datas (return empty string if array is empty)
  *                   12.27.2007 Jerome
  *                    - Added handling of null values
  *                   12.26.2007 Jerome
- *                    - fixed method getExtObject when we want to assign a name attribute and we don't specify "attributes" key in $attributes param
+ *                    - Fixed method getExtObject when we want to assign a name attribute and we don't specify "attributes" key in $attributes param
  *                    - Fixed order for display private attributes in method beginApplication
  *                    - Added datas parameter for method getExtObjectComponent
  *                    - Added method _build_datas
@@ -56,9 +60,14 @@
  */
 class sfExtjs2Plugin {
 
-  const LBR    = "\n";
-  const LBR_CM = ",\n";
-  const LBR_SM = ";\n";
+  const 
+    LBR      = "\n",
+    LBR_CM   = ",\n",
+    LBR_SM   = ";\n",
+    LBR_CB_L = "{\n",
+    LBR_CB_R = "\n}",
+    LBR_SB_L = "[\n",
+    LBR_SB_R = "\n]";
   
   private 
     $items     = array(),
@@ -219,53 +228,59 @@ class sfExtjs2Plugin {
    */
   public static function getExtObject($class, $params = array())
   {
-    # name for var
-    $name = null;
-    if (is_array($params) && array_key_exists('name', $params))
-    {
-      $name = $params['name'];
-      unset($params['name']);
-    }
+    $name = $lbr = null;
+    $attributes = $parameters = $datas = array();
     
-    // 'lbr' for a line break
-    $lbr = null;
-    if (is_array($params) && array_key_exists('lbr', $params))
-    {
-      $lbr = $params['lbr'];
-    }
-    
-    # parameters for constructor
-    $parameters = array();
-    if (is_array($params) && array_key_exists('parameters', $params))
-    {
-      $parameters = $params['parameters'];
-      unset($params['parameters']);
-    }
-    
-    # datas for constructor
-    $datas = array();
-    if (is_array($params) && array_key_exists('datas', $params))
-    {
-      $datas = $params['datas'];
-      unset($params['datas']);
-    }
- 
     # syntax A is a shortform of syntax B
     # if syntax A is used then convert syntax A to syntax B
-    $attributes = array();
-    if (is_array($params))
+    if (is_array($params) && !array_key_exists('attributes', $params) && !array_key_exists('parameters', $params) && !array_key_exists('datas', $params))
     {
-      $attributes = array_key_exists('attributes', $params) ? $params['attributes'] : $params;
+      $attributes = $params;
+    }
+    else
+    {
+      $attributes = array_key_exists('attributes', $params) ? $params['attributes'] : array();
+      
+      // name for var      
+      if (is_array($params) && array_key_exists('name', $params))
+      {
+        $name = $params['name'];
+        unset($params['name']);
+      }
+      
+      // 'lbr' for a line break
+      if (is_array($params) && array_key_exists('lbr', $params))
+      {
+        $lbr = $params['lbr'];
+        unset($params['name']);
+      }
+      
+      // parameters for constructor
+      if (is_array($params) && array_key_exists('parameters', $params))
+      {
+        $parameters = $params['parameters'];
+        unset($params['parameters']);
+      }
+      
+      // datas for constructor
+      if (is_array($params) && array_key_exists('datas', $params))
+      {
+        $datas = $params['datas'];
+        unset($params['datas']);
+      }
     }
   
     # list attributes must defined as an Javascript array
     # therefore all list attributes must be rendered as [attributeA, attributeB, attributeC]
-    
     foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute)
     {
       if (array_key_exists($attribute, $attributes) && !$attributes[$attribute] instanceof sfExtjs2Var)
       {
-        $attributes[$attribute] = sprintf('[%s]', self::_build_attributes($attributes[$attribute]));
+        $attributes[$attribute] = sprintf
+        (
+          self::LBR_SB_L.'%s'.self::LBR_SB_R, 
+          self::_build_attributes($attributes[$attribute])
+        );
       }
     }
 
@@ -305,27 +320,27 @@ class sfExtjs2Plugin {
   public static function getExtObjectComponent($attributes = array(), $config = array(), $parameters = array(), $datas = array())
   {
     $attributes = self::_build_attributes($attributes, $config['attributes']);
-    $attributes = sprintf('%s', $attributes != '' ? '{'.$attributes.'}' : '');
+    $attributes = sprintf('%s', $attributes != '' ? self::LBR_CB_L.$attributes.self::LBR_CB_R : '');
   
     $parameters = implode(self::LBR_CM, $parameters);
     $datas = $config['class'] == 'anonymousClass' ? self::_build_datas($datas) : (!empty($datas) ? "'".implode("'".self::LBR_CM."'", $datas)."'" : '');
-  
+    
     switch ($config['class'])
     {
       case 'anonymousClass':
         $source = sprintf(
           '%s%s%s%s%s',
           $parameters,
-          $parameters != '' && $datas != '' ? ',' : '',
+          $parameters != '' && $datas != '' ? self::LBR_CM : '',
           $datas,
-          $datas != '' && $attributes != '' ? ',' : '',
+          $datas != '' && $attributes != '' ? self::LBR_CM : '',
           $attributes
         );
         return $source;
 
       case 'customClass':
         $source = sprintf(
-          '{%s}',
+          '{ %s }',
           $attributes
         );
         return $source;
@@ -334,10 +349,10 @@ class sfExtjs2Plugin {
         $source = sprintf(
           'new %s (%s%s%s%s%s)',
           $config['class'],
-          $parameters != '' ? '['.$parameters.']' : '',
-          $parameters != '' && $datas != '' ? ',' : '',
+          $parameters != '' ? self::LBR_SB_L.$parameters.self::LBR_SB_R : '',
+          $parameters != '' && $datas != '' ? self::LBR_CM : '',
           $datas,
-          $datas != '' && $attributes != '' ? ',' : '',
+          $datas != '' && $attributes != '' ? self::LBR_CM : '',
           $attributes
         );
         return $source;
@@ -443,7 +458,7 @@ class sfExtjs2Plugin {
   
     // write class tag
     $source .= self::_comment(sprintf("%s// class: %s.%s%s", self::LBR, $namespace, $classname, self::LBR));
-    $source .= sprintf("%s.%s = Ext.extend(%s, {%s", $namespace, $classname, $extend, self::LBR);
+    $source .= sprintf("%s.%s = Ext.extend(%s, { %s", $namespace, $classname, $extend, self::LBR);
   
     // write attributes
     $source .= self::_build_attributes($attributes);
@@ -585,7 +600,7 @@ class sfExtjs2Plugin {
   {
     $source  = '';
     $source .= $this->getExtObject('anonymousClass', $attributes);
-
+    
     return new sfExtjs2Var($source);
   }
 
@@ -628,12 +643,12 @@ class sfExtjs2Plugin {
       $source .= sprintf
       (
         '%s"%s":%s',
-        $source != '' ? ',' : '',
+        $source != '' ? self::LBR_CM : '',
         $key,
         $value 
       );    
     }
-    $source = sprintf('{%s}', $source);
+    $source = sprintf('{ %s }', $source);
     
     return new sfExtjs2Var($source);
   }
@@ -732,11 +747,11 @@ class sfExtjs2Plugin {
     {
       if (!is_numeric($key))
       {
-        $attributes .= sprintf('%s%s:%s', ($attributes === '' ? '' : self::LBR_CM), $key, self::_quote($key, $value));
+        $attributes .= sprintf('%s%s: %s', ($attributes == '' ? '' : self::LBR_CM), $key, self::_quote($key, $value));
       }
       else
       {
-        $attributes .= sprintf('%s%s', ($attributes === '' ? '' : self::LBR_CM), self::_quote($key, $value));
+        $attributes .= sprintf('%s%s', ($attributes == '' ? '' : self::LBR_CM), self::_quote($key, $value));
       }
     }
   
@@ -745,8 +760,10 @@ class sfExtjs2Plugin {
   
   private static function _build_datas ($custom_datas = array(), $isArray = false)
   {
-    $curly = $isArray ? '[' : '{';
-    $datas = $curly.self::LBR;
+    if (!is_array($custom_datas)) return $custom_datas;
+    if (empty($custom_datas)) return '';
+    
+    $datas = $isArray ? self::LBR_SB_L : self::LBR_CB_L;
     $first = true;
   
     foreach ($custom_datas as $key => $value)
@@ -759,7 +776,7 @@ class sfExtjs2Plugin {
       
       if (!is_numeric($key))
       {
-        $datas .= sprintf('%s%s:%s', ($first ? '' : self::LBR_CM), $key, $final_value);
+        $datas .= sprintf('%s%s: %s', ($first ? '' : self::LBR_CM), $key, $final_value);
       }
       else
       {
@@ -769,8 +786,7 @@ class sfExtjs2Plugin {
       $first = false;
     }
     
-    $datas .= self::LBR;
-    $datas .= $isArray ? ']' : '}';
+    $datas .= $isArray ? self::LBR_SB_R : self::LBR_CB_R;
     
     return $datas;
   }
@@ -794,15 +810,15 @@ class sfExtjs2Plugin {
       {
         if (!is_numeric($k))
         {
-          $attribute .= sprintf('%s%s:%s', ($attribute === '' ? '' : ','), $k, self::_quote($k, $v));
+          $attribute .= sprintf('%s%s: %s', ($attribute == '' ? '' : self::LBR_CM), $k, self::_quote($k, $v));
         }
         else
         {
-          $attribute .= sprintf('%s%s', ($attribute === '' ? '' : ','), self::_quote($k, $v));
+          $attribute .= sprintf('%s%s', ($attribute == '' ? '' : self::LBR_CM), self::_quote($k, $v));
         }
       }
   
-      $attribute = sprintf('{%s}', $attribute);
+      $attribute = sprintf('{ %s }', $attribute);
       return $attribute;
     }
   
