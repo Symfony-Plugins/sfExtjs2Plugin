@@ -65,11 +65,12 @@ sfConfig::set('sf_extjs2_quote_except',
 sfConfig::set('sf_extjs2_classes',
   array(
     // data
-    'JsonReader'   => 'Ext.data.JsonReader',
-    'Store'        => 'Ext.data.Store',
-    'HttpProxy'    => 'Ext.data.HttpProxy',   
-    'Template'     => 'Ext.Template',  
-    'XTemplate'    => 'Ext.XTemplate',
+    'JsonReader'    => 'Ext.data.JsonReader',
+    'Store'         => 'Ext.data.Store',
+    'GroupingStore' => 'Ext.data.GroupingStore',
+    'HttpProxy'     => 'Ext.data.HttpProxy',   
+    'Template'      => 'Ext.Template',  
+    'XTemplate'     => 'Ext.XTemplate',
     // widgets
     'BoxComponent'      => 'Ext.BoxComponent',
     'Button'            => 'Ext.Button',
@@ -116,6 +117,13 @@ sfConfig::set('Ext.data.JsonReader',
 sfConfig::set('Ext.data.Store',
   array(
     'class'       => 'Ext.data.Store',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.data.GroupingStore',
+  array(
+    'class'       => 'Ext.data.GroupingStore',
     'attributes'  => array()
   )
 );
