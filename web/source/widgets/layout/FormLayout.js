@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -126,6 +126,7 @@ Ext.layout.FormLayout = Ext.extend(Ext.layout.AnchorLayout, {
             this.labelAdjust = 0;
         }else{
             this.labelSeparator = ct.labelSeparator || this.labelSeparator;
+            ct.labelWidth = ct.labelWidth || 100;
             if(typeof ct.labelWidth == 'number'){
                 var pad = (typeof ct.labelPad == 'number' ? ct.labelPad : 5);
                 this.labelAdjust = ct.labelWidth+pad;

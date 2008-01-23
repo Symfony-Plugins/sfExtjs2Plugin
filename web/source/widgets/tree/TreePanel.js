@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -592,36 +592,129 @@ Ext.tree.TreePanel = Ext.extend(Ext.Panel, {
         Ext.tree.TreePanel.superclass.onDestroy.call(this);
     }
     
-    /** @cfg {String/Number} activeItem @hide */
-    /** @cfg {Boolean} autoDestroy @hide */
-    /** @cfg {Object/String/Function} autoLoad @hide */
-    /** @cfg {Boolean} autoWidth @hide */
-    /** @cfg {Boolean/Number} bufferResize @hide */
-    /** @cfg {String} defaultType @hide */
-    /** @cfg {Object} defaults @hide */
-    /** @cfg {Boolean} hideBorders @hide */
-    /** @cfg {Mixed} items @hide */
-    /** @cfg {String} layout @hide */
-    /** @cfg {Object} layoutConfig @hide */
-    /** @cfg {Boolean} monitorResize @hide */
-    /** @property items @hide */
-    /** @method add @hide */
-    /** @method cascade @hide */
-    /** @method doLayout @hide */
-    /** @method find @hide */
-    /** @method findBy @hide */
-    /** @method findById @hide */
-    /** @method findByType @hide */
-    /** @method getComponent @hide */
-    /** @method getLayout @hide */
-    /** @method getUpdater @hide */
-    /** @method insert @hide */
-    /** @method load @hide */
-    /** @method remove @hide */
-    /** @event add @hide */
-    /** @event afterLayout @hide */
-    /** @event beforeadd @hide */
-    /** @event beforeremove @hide */
-    /** @event remove @hide */
+    /** 
+     * @cfg {String/Number} activeItem 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean} autoDestroy 
+     * @hide 
+     */
+    /** 
+     * @cfg {Object/String/Function} autoLoad 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean} autoWidth 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean/Number} bufferResize 
+     * @hide 
+     */
+    /** 
+     * @cfg {String} defaultType 
+     * @hide 
+     */
+    /** 
+     * @cfg {Object} defaults 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean} hideBorders 
+     * @hide 
+     */
+    /** 
+     * @cfg {Mixed} items 
+     * @hide 
+     */
+    /** 
+     * @cfg {String} layout 
+     * @hide 
+     */
+    /** 
+     * @cfg {Object} layoutConfig 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean} monitorResize 
+     * @hide 
+     */
+    /** 
+     * @property items 
+     * @hide 
+     */
+    /** 
+     * @method add 
+     * @hide 
+     */
+    /** 
+     * @method cascade 
+     * @hide 
+     */
+    /** 
+     * @method doLayout 
+     * @hide 
+     */
+    /** 
+     * @method find 
+     * @hide 
+     */
+    /** 
+     * @method findBy 
+     * @hide 
+     */
+    /** 
+     * @method findById 
+     * @hide 
+     */
+    /** 
+     * @method findByType 
+     * @hide 
+     */
+    /** 
+     * @method getComponent 
+     * @hide 
+     */
+    /** 
+     * @method getLayout 
+     * @hide 
+     */
+    /** 
+     * @method getUpdater 
+     * @hide 
+     */
+    /** 
+     * @method insert 
+     * @hide 
+     */
+    /** 
+     * @method load 
+     * @hide 
+     */
+    /** 
+     * @method remove 
+     * @hide 
+     */
+    /** 
+     * @event add 
+     * @hide 
+     */
+    /** 
+     * @event afterLayout 
+     * @hide 
+     */
+    /** 
+     * @event beforeadd 
+     * @hide 
+     */
+    /** 
+     * @event beforeremove 
+     * @hide 
+     */
+    /** 
+     * @event remove 
+     * @hide 
+     */
 });
 Ext.reg('treepanel', Ext.tree.TreePanel);

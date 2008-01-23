@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -87,12 +87,9 @@ Ext.layout.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
             // the innerCt prevents wrapping and shuffling while
             // the container is resizing
             this.innerCt = target.createChild({cls:'x-column-inner'});
-
-            this.renderAll(ct, this.innerCt);
-
             this.innerCt.createChild({cls:'x-clear'});
-
         }
+        this.renderAll(ct, this.innerCt);
 
         var size = target.getViewSize();
 

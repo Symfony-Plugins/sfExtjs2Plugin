@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -275,15 +275,34 @@ Ext.extend(Ext.Component, Ext.util.Observable, {
      * Using this config, a call to render() is not required.
      */
 
+    /**
+     * @cfg {Boolean} stateful
+     * A flag which causes the Component to attempt to restore the state of internal properties
+     * from a saved state on startup.<p>
+     * For state saving to work, the state manager's provider must have been set to an implementation
+     * of {@link Ext.state.Provider} which overrides the {@link Ext.state.Provider#set set}
+     * and {@link Ext.state.Provider#get get} methods to save and recall name/value pairs.
+     * A built-in implementation, {@link Ext.state.CookieProvider} is available.</p>
+     * <p>To set the state provider for the current page:</p>	
+     * <pre><code>
+Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+</code></pre>
+     * <p>Components attempt to save state when one of the events listed in the {@link #stateEvents}
+     * configuration fires.</p>
+     * <p>You can perform extra processing on state save and restore by attaching handlers to the
+     * {@link #beforestaterestore}, {@link staterestore}, {@link beforestatesave} and {@link statesave} events</p>
+     */
     /* //internal - to be set by subclasses
      * @cfg {String} stateId
      * The unique id for this component to use for state management purposes (defaults to the component id).
+     * <p>See {@link #stateful} for an explanation of saving and restoring Component state.</p>
      */
     /* //internal - to be set by subclasses
      * @cfg {Array} stateEvents
      * An array of events that, when fired, should trigger this component to save its state (defaults to none).
      * These can be any types of events supported by this component, including browser or custom events (e.g.,
      * ['click', 'customerchange']).
+     * <p>See {@link #stateful} for an explanation of saving and restoring Component state.</p>
      */
 
     /**

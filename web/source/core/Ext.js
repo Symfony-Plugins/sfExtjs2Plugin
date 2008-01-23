@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -7,7 +7,7 @@
  */
 
 
-Ext = {version: '2.0'};
+Ext = {version: '2.0.1'};
 
 // for old browsers
 window["undefined"] = window["undefined"];
@@ -558,7 +558,7 @@ Company.data.CustomStore = function(config) { ... }
         /** @type Boolean */
         isMac : isMac,
         /** @type Boolean */
-        isAir : !!window.htmlControl,
+        isAir : !!window.air,
 
     /**
      By default, Ext intelligently decides whether floating elements should be shimmed. If you are using flash,
@@ -715,13 +715,13 @@ var s = String.leftPad('123', 5, '0');
      */
     leftPad : function (val, size, ch) {
         var result = new String(val);
-        if(ch === null || ch === undefined || ch === '') {
+        if(!ch) {
             ch = " ";
         }
         while (result.length < size) {
             result = ch + result;
         }
-        return result;
+        return result.toString();
     },
 
     /**

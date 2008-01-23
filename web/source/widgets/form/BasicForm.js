@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -137,8 +137,10 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
         this.items.each(function(f){
             Ext.destroy(f);
         });
-		this.el.removeAllListeners();
-		this.el.remove();
+        if(this.el){
+			this.el.removeAllListeners();
+			this.el.remove();
+        }
 		this.purgeListeners();
 	},
 
@@ -208,8 +210,8 @@ Ext.extend(Ext.form.BasicForm, Ext.util.Observable, {
      * callback functions (The <tt>this</tt> reference for the callback functions).</p></li>
      * <li><b>clientValidation</b> : Boolean<p style="margin-left:1em">Submit Action only.
      * Determines whether a Form's fields are validated in a final call to
-     * {@link Ext.form.BasicForm#isValid isValid} prior to submission. Pass <tt>false</tt>
-     * in the to prevent this. If not defined, pre-submission field validation is performed.</p></li></ul>
+     * {@link Ext.form.BasicForm#isValid isValid} prior to submission. Set to <tt>false</tt>
+     * to prevent this. If undefined, pre-submission field validation is performed.</p></li></ul>
      * @return {BasicForm} this
      */
     doAction : function(action, options){

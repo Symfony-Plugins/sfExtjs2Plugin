@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -74,10 +74,11 @@ Ext.layout.ContainerLayout.prototype = {
     // private
     renderItem : function(c, position, target){
         if(c && !c.rendered){
-            if(this.extraCls){
-                c.addClass(this.extraCls);
-            }
             c.render(target, position);
+            if(this.extraCls){
+            	var t = c.getPositionEl ? c.getPositionEl() : c;
+            	t.addClass(this.extraCls);
+            }
             if (this.renderHidden && c != this.activeItem) {
                 c.hide();
             }

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -242,6 +242,12 @@ tools:[{
   	 * True to enable dragging of this Panel (defaults to false).  For custom drag/drop implementations, an Ext.Panel.DD
   	 * config could also be passed in this config instead of true, although Ext.Panel.DD is an internal, undocumented class.
      */
+	/**
+  	 * @cfg {String} tabTip
+  	 * Adds a tooltip when mousing over the tab of a Ext.Panel which is an item of a Ext.TabPanel. Ext.QuickTips.init()
+  	 * must be called in order for the tips to render.
+     */
+
 
     /**
     * @cfg {String} baseCls
@@ -655,7 +661,7 @@ tools:[{
     setIconClass : function(cls){
         var old = this.iconCls;
         this.iconCls = cls;
-        if(this.rendered){
+        if(this.rendered && this.header){
             if(this.frame){
                 this.header.addClass('x-panel-icon');
                 this.header.replaceClass(old, this.iconCls);
@@ -808,9 +814,7 @@ tools:[{
         if(this.title){
             this.setTitle(this.title);
         }
-        if(this.autoScroll){
-            this.body.dom.style.overflow = 'auto';
-        }
+		this.setAutoScroll();
         if(this.html){
             this.body.update(typeof this.html == 'object' ?
                              Ext.DomHelper.markup(this.html) :
@@ -828,6 +832,13 @@ tools:[{
         }
         Ext.Panel.superclass.afterRender.call(this); // do sizing calcs last
         this.initEvents();
+    },
+    
+    // private
+    setAutoScroll : function(){
+        if(this.rendered && this.autoScroll){
+			this.body.setOverflow('auto');
+        }
     },
 
     // private

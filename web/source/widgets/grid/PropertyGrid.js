@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -265,7 +265,6 @@ var grid = new Ext.grid.PropertyGrid({
     */
 
     // private config overrides
-    enableColLock:false,
     enableColumnMove:false,
     stripeRows:false,
     trackMouseOver: false,
@@ -336,14 +335,15 @@ var grid = new Ext.grid.PropertyGrid({
     /**
      * Sets the source data object containing the property data.  The data object can contain one or more name/value
      * pairs representing all of the properties of an object to display in the grid, and this data will automatically
-     * be loaded into the grid's {@link #store}.  If the grid already contains data, this method will replace any
+     * be loaded into the grid's {@link #store}.  The values should be supplied in the proper data type if needed,
+     * otherwise string type will be assumed.  If the grid already contains data, this method will replace any
      * existing data.  See also the {@link #source} config value.  Example usage:
      * <pre><code>
 grid.setSource({
     "(name)": "My Object",
-    "Created": new Date(Date.parse('10/15/2006')),
-    "Available": false,
-    "Version": .01,
+    "Created": new Date(Date.parse('10/15/2006')),  // date type
+    "Available": false,  // boolean type
+    "Version": .01,      // decimal type
     "Description": "A test object"
 });
 </code></pre>

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -141,9 +141,11 @@ Ext.QuickTip = Ext.extend(Ext.ToolTip, {
         if(t){
             if(!this.rendered){
                 this.render(Ext.getBody());
+                this.activeTarget = t;
             }
             if(t.width){
                 this.setWidth(t.width);
+                this.body.setWidth(this.adjustBodyWidth(t.width - this.getFrameWidth()));
                 this.measureWidth = false;
             } else{
                 this.measureWidth = true;

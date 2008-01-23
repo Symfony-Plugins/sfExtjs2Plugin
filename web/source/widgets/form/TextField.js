@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -287,7 +287,7 @@ Ext.form.TextField = Ext.extend(Ext.form.Field,  {
             }else if(d.createTextRange){
                 var range = d.createTextRange();
                 range.moveStart("character", start);
-                range.moveEnd("character", v.length-end);
+                range.moveEnd("character", end-v.length);
                 range.select();
             }
         }

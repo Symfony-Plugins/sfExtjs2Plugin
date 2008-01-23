@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -206,8 +206,11 @@ Ext.Container = Ext.extend(Ext.BoxComponent, {
     },
 
     /**
-     * Adds a Component to this Container. Fires the beforeadd event before adding,
-     * then fires the add event after the component has been added.
+     * Adds a component to this container. Fires the beforeadd event before adding,
+     * then fires the add event after the component has been added.  If the container is
+     * already rendered when add is called, you may need to call {@link #doLayout} to refresh
+     * the view.  This is required so that you can add multiple child components if needed
+     * while only refreshing the layout once.
      * @param {Ext.Component/Object} component The component to add.<br><br>
      * Ext uses lazy rendering, and will only render the added Component should
      * it become necessary.<br><br>
@@ -360,8 +363,7 @@ Ext.Container = Ext.extend(Ext.BoxComponent, {
 
     /**
      * Force this container's layout to be recalculated. A call to this function is required after adding a new component
-     * to an already rendered container. If you are not dynamically adding and removing components after render, this
-     * function will generally not need to be called.
+     * to an already rendered container, or possibly after changing sizing/position properties of child components.
      */
     doLayout : function(){
         if(this.rendered && this.layout){

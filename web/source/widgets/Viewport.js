@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -21,11 +21,11 @@
 new Ext.Viewport({
     layout: 'border',
     defaults: {
-        activeItem: 0,
+        activeItem: 0
     },
     items: [{
         region: 'north',
-        html: '<h1 class="x-panel-header">Page Title</h1>',
+        html: '&lt;h1 class="x-panel-header">Page Title&lt;/h1>',
         autoHeight: true,
         border: false,
         margins: '0 0 5 0'

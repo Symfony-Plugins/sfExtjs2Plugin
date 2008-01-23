@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -34,7 +34,23 @@ Ext.form.Radio = Ext.extend(Ext.form.Checkbox, {
      * @return {String}
      */
     getGroupValue : function(){
-        return this.el.up('form').child('input[name='+this.el.dom.name+']:checked', true).value;
+    	var p = this.el.up('form') || Ext.getBody();
+        return p.child('input[name='+this.el.dom.name+']:checked', true).value;
+    },
+    
+    // private
+    onClick : function(){
+    	if(this.el.dom.checked != this.checked){
+    		var p = this.el.up('form') || Ext.getBody();
+			var els = p.select('input[name='+this.el.dom.name+']');
+			els.each(function(el){
+				if(el.dom.id == this.id){
+					this.setValue(true);
+				}else{
+					Ext.getCmp(el.dom.id).setValue(false);
+				}
+			}, this);
+		}
     }
 });
 Ext.reg('radio', Ext.form.Radio);

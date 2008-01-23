@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -115,7 +115,9 @@ Ext.form.NumberField = Ext.extend(Ext.form.TextField,  {
     },
 
     setValue : function(v){
-        Ext.form.NumberField.superclass.setValue.call(this, String(parseFloat(v)).replace(".", this.decimalSeparator));
+    	v = parseFloat(v);
+    	v = isNaN(v) ? '' : String(v).replace(".", this.decimalSeparator);
+        Ext.form.NumberField.superclass.setValue.call(this, v);
     },
 
     // private

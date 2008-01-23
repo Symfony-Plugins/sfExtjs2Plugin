@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,7 +9,8 @@
 /**
  * @class Ext.Toolbar
  * @extends Ext.BoxComponent
- * Basic Toolbar class.
+ * Basic Toolbar class. Toolbar elements can be created explicitly via their constructors, or implicitly
+ * via their xtypes.  Some items also have shortcut strings for creation.  
  * @constructor
  * Creates a new Toolbar
  * @param {Object/Array} config A config object or an array of buttons to add
@@ -49,7 +50,7 @@ Ext.extend(T, Ext.BoxComponent, {
 
     // private
     onRender : function(ct, position){
-        this.el = ct.createChild(this.autoCreate, position);
+        this.el = ct.createChild(Ext.apply({ id: this.id },this.autoCreate), position);
         this.tr = this.el.child("tr", true);
     },
 
@@ -412,7 +413,16 @@ Ext.reg('tbitem', T.Item);
 /**
  * @class Ext.Toolbar.Separator
  * @extends Ext.Toolbar.Item
- * A simple toolbar separator class
+ * A simple class that adds a vertical separator bar between toolbar items.  Example usage:
+ * <pre><code>
+new Ext.Panel({
+	tbar : [
+		'Item 1',
+		{xtype: 'tbseparator'}, // or '-'
+		'Item 2'
+	]
+});
+</code></pre>
  * @constructor
  * Creates a new Separator
  */
@@ -431,7 +441,16 @@ Ext.reg('tbseparator', T.Separator);
 /**
  * @class Ext.Toolbar.Spacer
  * @extends Ext.Toolbar.Item
- * A simple element that adds extra horizontal space to a toolbar.
+ * A simple element that adds extra horizontal space between items in a toolbar.
+ * <pre><code>
+new Ext.Panel({
+	tbar : [
+		'Item 1',
+		{xtype: 'tbspacer'}, // or ' '
+		'Item 2'
+	]
+});
+</code></pre>
  * @constructor
  * Creates a new Spacer
  */
@@ -451,7 +470,16 @@ Ext.reg('tbspacer', T.Spacer);
 /**
  * @class Ext.Toolbar.Fill
  * @extends Ext.Toolbar.Spacer
- * A simple element that adds a greedy (100% width) horizontal space to a toolbar.
+ * A simple element that adds a greedy (100% width) horizontal space between items in a toolbar.
+ * <pre><code>
+new Ext.Panel({
+	tbar : [
+		'Item 1',
+		{xtype: 'tbfill'}, // or '->'
+		'Item 2'
+	]
+});
+</code></pre>
  * @constructor
  * Creates a new Spacer
  */
@@ -468,14 +496,21 @@ Ext.reg('tbfill', T.Fill);
  * @class Ext.Toolbar.TextItem
  * @extends Ext.Toolbar.Item
  * A simple class that renders text directly into a toolbar.
+ * <pre><code>
+new Ext.Panel({
+	tbar : [
+		{xtype: 'tbtext', text: 'Item 1'} // or simply 'Item 1'
+	]
+});
+</code></pre>
  * @constructor
  * Creates a new TextItem
- * @param {String} text
+ * @param {String/Object} text A text string, or a config object containing a <tt>text</tt> property
  */
-T.TextItem = function(text){
+T.TextItem = function(t){
     var s = document.createElement("span");
     s.className = "ytb-text";
-    s.innerHTML = text;
+    s.innerHTML = t.text ? t.text : t;
     T.TextItem.superclass.constructor.call(this, s);
 };
 Ext.extend(T.TextItem, T.Item, {
@@ -489,7 +524,15 @@ Ext.reg('tbtext', T.TextItem);
 /**
  * @class Ext.Toolbar.Button
  * @extends Ext.Button
- * A button that renders into a toolbar.
+ * A button that renders into a toolbar. Use the <tt>handler</tt> config to specify a callback function
+ * to handle the button's click event.
+ * <pre><code>
+new Ext.Panel({
+	tbar : [
+		{text: 'OK', handler: okHandler} // tbbutton is the default xtype if not specified
+	]
+});
+</code></pre>
  * @constructor
  * Creates a new Button
  * @param {Object} config A standard {@link Ext.Button} config object
@@ -509,7 +552,25 @@ Ext.reg('tbbutton', T.Button);
 /**
  * @class Ext.Toolbar.SplitButton
  * @extends Ext.SplitButton
- * A menu button that renders into a toolbar.
+ * A split button that renders into a toolbar.
+ * <pre><code>
+new Ext.Panel({
+	tbar : [
+		{
+			xtype: 'tbsplit',
+		   	text: 'Options',
+		   	handler: optionsHandler, // handle a click on the button itself
+		   	menu: new Ext.menu.Menu({
+		        items: [
+		        	// These items will display in a dropdown menu when the split arrow is clicked
+			        {text: 'Item 1', handler: item1Handler},
+			        {text: 'Item 2', handler: item2Handler},
+		        ]
+		   	})
+		}
+	]
+});
+</code></pre>
  * @constructor
  * Creates a new SplitButton
  * @param {Object} config A standard {@link Ext.SplitButton} config object

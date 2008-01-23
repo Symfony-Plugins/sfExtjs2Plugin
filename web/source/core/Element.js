@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -1416,6 +1416,16 @@ el.un('click', this.handlerFn);
         }
     },
 
+    // private
+	setOverflow : function(v){
+    	if(v=='auto' && Ext.isMac && Ext.isGecko){ // work around stupid FF 2.0/Mac scroll bar bug
+    		this.dom.style.overflow = 'hidden';
+        	(function(){this.dom.style.overflow = 'auto';}).defer(1, this);
+    	}else{
+    		this.dom.style.overflow = v;
+    	}
+	},
+	
     /**
      * Quick set left and top adding default units
      * @param {String} left The left CSS property value
@@ -2399,7 +2409,7 @@ el.alignTo("other-el", "c-bl", [-6, 0]);
      */
     insertFirst: function(el, returnDom){
         el = el || {};
-        if(typeof el == 'object' && !el.nodeType){ // dh config
+        if(typeof el == 'object' && !el.nodeType && !el.dom){ // dh config
             return this.createChild(el, this.dom.firstChild, returnDom);
         }else{
             el = Ext.getDom(el);
@@ -2427,7 +2437,7 @@ el.alignTo("other-el", "c-bl", [-6, 0]);
         el = el || {};
         var refNode = where == 'before' ? this.dom : this.dom.nextSibling;
 
-        if(typeof el == 'object' && !el.nodeType){ // dh config
+        if(typeof el == 'object' && !el.nodeType && !el.dom){ // dh config
             if(where == 'after' && !this.dom.nextSibling){
                 rt = Ext.DomHelper.append(this.dom.parentNode, el, !returnDom);
             }else{
@@ -2476,7 +2486,7 @@ el.alignTo("other-el", "c-bl", [-6, 0]);
      * @return {Ext.Element} this
      */
     replaceWith: function(el){
-        if(typeof el == 'object' && !el.nodeType){ // dh config
+        if(typeof el == 'object' && !el.nodeType && !el.dom){ // dh config
             el = this.insertSibling(el, 'before');
         }else{
             el = Ext.getDom(el);
@@ -2494,7 +2504,7 @@ el.alignTo("other-el", "c-bl", [-6, 0]);
      * Inserts an html fragment into this element
      * @param {String} where Where to insert the html in relation to the this element - beforeBegin, afterBegin, beforeEnd, afterEnd.
      * @param {String} html The HTML fragment
-     * @param {Boolean} returnEl True to return an Ext.Element
+     * @param {Boolean} returnEl (optional) True to return an Ext.Element (defaults to false)
      * @return {HTMLElement/Ext.Element} The inserted node (or nearest related if more than 1 inserted)
      */
     insertHtml : function(where, html, returnEl){

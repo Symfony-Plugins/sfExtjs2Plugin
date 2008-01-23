@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -134,12 +134,20 @@ Ext.extend(Ext.grid.ColumnModel, Ext.util.Observable, {
      * @cfg {Boolean} hidden (optional) True to hide the column. Defaults to false.
      */
     /**
+     * @cfg {String} tooltip (optional) A text string to use as the column header's tooltip.  If Quicktips are enabled, this
+     * value will be used as the text of the quick tip, otherwise it will be set as the header's HTML title attribute. 
+     * Defaults to ''.
+     */
+    /**
      * @cfg {Function} renderer (optional) A function used to generate HTML markup for a cell
      * given the cell's data value. See {@link #setRenderer}. If not specified, the
      * default renderer uses the raw data value.
      */
     /**
      * @cfg {String} align (optional) Set the CSS text-align property of the column.  Defaults to undefined.
+     */
+    /**
+     * @cfg {String} css (optional) Set custom CSS for all table cells in the column (excluding headers).  Defaults to undefined.
      */
     /**
      * @cfg {Boolean} hideable (optional) Specify as <tt>false</tt> to prevent the user from hiding this column.  Defaults to true.

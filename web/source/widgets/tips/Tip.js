@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -21,11 +21,16 @@ Ext.Tip = Ext.extend(Ext.Panel, {
      * @cfg {Boolean} closable True to render a close tool button into the tooltip header (defaults to false).
      */
     /**
+     * @cfg {Number} width
+     * Width in pixels of the tip (defaults to auto).  Width will be ignored if it exceeds the bounds of
+     * {@link #minWidth} or {@link #maxWidth}.  The maximum supported value is 500.
+     */
+    /**
      * @cfg {Number} minWidth The minimum width of the tip in pixels (defaults to 40).
      */
     minWidth : 40,
     /**
-     * @cfg {Number} maxWidth The maximum width of the tip in pixels (defaults to 300).
+     * @cfg {Number} maxWidth The maximum width of the tip in pixels (defaults to 300).  The maximum supported value is 500.
      */
     maxWidth : 300,
     /**

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -609,7 +609,7 @@ el.fadeOut({ endOpacity: .25, duration: 2});
 el.fadeOut({
     endOpacity: 0, //can be any value between 0 and 1 (e.g. .5)
     easing: 'easeOut',
-    duration: .5
+    duration: .5,
     remove: false,
     useDisplay: false
 });
@@ -648,9 +648,10 @@ el.scale(100, 100);
 el.scale(
     [element's width],
     [element's height], {
-    easing: 'easeOut',
-    duration: .35
-});
+	    easing: 'easeOut',
+	    duration: .35
+	}
+);
 </code></pre>
     * @param {Number} width  The new width (pass undefined to keep the original width)
     * @param {Number} height  The new height (pass undefined to keep the original height)

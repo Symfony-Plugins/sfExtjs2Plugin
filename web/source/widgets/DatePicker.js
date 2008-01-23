@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -292,7 +292,7 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
 
 
         var today = (new Date()).dateFormat(this.format);
-        var todayBtn = new Ext.Button({
+        this.todayBtn = new Ext.Button({
             renderTo: this.el.child("td.x-date-bottom", true),
             text: String.format(this.todayText, today),
             tooltip: String.format(this.todayTip, today),
@@ -611,6 +611,12 @@ Ext.DatePicker = Ext.extend(Ext.Component, {
                 this.update.defer(10, this, [date]);
             }
         }
+    },
+
+    // private
+    beforeDestroy : function() {
+        this.mbtn.destroy();
+        this.todayBtn.destroy();
     }
 });
 Ext.reg('datepicker', Ext.DatePicker);

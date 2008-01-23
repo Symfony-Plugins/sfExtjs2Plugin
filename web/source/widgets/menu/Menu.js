@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -496,7 +496,30 @@ var item = menu.add(
         while(f = this.items.first()){
             this.remove(f);
         }
-    }
+    },
+
+    /**
+     * Destroys the menu by  unregistering it from {@link Ext.menu.MenuMgr}, purging event listeners,
+     * removing all of the menus items, then destroying the underlying {@link Ext.Element}
+     */
+    destroy : function(){
+        this.beforeDestroy();
+        Ext.menu.MenuMgr.unregister(this);
+        if (this.keyNav) {
+        	this.keyNav.disable();	
+        }
+        this.removeAll();
+        if (this.ul) {
+        	this.ul.removeAllListeners();	
+        }
+        if (this.el) {
+        	this.el.destroy();	
+        }
+    },
+
+	// private
+    beforeDestroy : Ext.emptyFn
+
 });
 
 // MenuNav is a private utility class used internally by the Menu

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -21,59 +21,59 @@ Ext.grid.GridView = function(config){
     Ext.apply(this, config);
     // These events are only used internally by the grid components
     this.addEvents(
-	    /**
+      /**
          * @event beforerowremoved
          * Internal UI Event. Fired before a row is removed.
          * @param {Ext.grid.GridView} view
          * @param {Number} rowIndex The index of the row to be removed.
          * @param {Ext.data.Record} record The Record to be removed
-	     */
-	    "beforerowremoved",
-	    /**
+       */
+      "beforerowremoved",
+      /**
          * @event beforerowsinserted
          * Internal UI Event. Fired before rows are inserted.
          * @param {Ext.grid.GridView} view
          * @param {Number} firstRow The index of the first row to be inserted.
          * @param {Number} lastRow The index of the last row to be inserted.
-	     */
-	    "beforerowsinserted",
-	    /**
+       */
+      "beforerowsinserted",
+      /**
          * @event beforerefresh
          * Internal UI Event. Fired before the view is refreshed.
          * @param {Ext.grid.GridView} view
-	     */
-	    "beforerefresh",
-	    /**
+       */
+      "beforerefresh",
+      /**
          * @event rowremoved
          * Internal UI Event. Fired after a row is removed.
          * @param {Ext.grid.GridView} view
          * @param {Number} rowIndex The index of the row that was removed.
          * @param {Ext.data.Record} record The Record that was removed
-	     */
-	    "rowremoved",
-	    /**
+       */
+      "rowremoved",
+      /**
          * @event rowsinserted
          * Internal UI Event. Fired after rows are inserted.
          * @param {Ext.grid.GridView} view
          * @param {Number} firstRow The index of the first inserted.
          * @param {Number} lastRow The index of the last row inserted.
-	     */
-	    "rowsinserted",
-	    /**
+       */
+      "rowsinserted",
+      /**
          * @event rowupdated
          * Internal UI Event. Fired after a row has been updated.
          * @param {Ext.grid.GridView} view
          * @param {Number} firstRow The index of the row updated.
          * @param {Ext.data.record} record The Record backing the row updated.
-	     */
-	    "rowupdated",
-	    /**
+       */
+      "rowupdated",
+      /**
          * @event refresh
          * Internal UI Event. Fired after the GridView's body has been refreshed.
          * @param {Ext.grid.GridView} view
-	     */
-	    "refresh"
-	);
+       */
+      "refresh"
+  );
     Ext.grid.GridView.superclass.constructor.call(this);
 };
 
@@ -170,7 +170,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
 
         if(!ts.hcell){
             ts.hcell = new Ext.Template(
-                    '<td class="x-grid3-hd x-grid3-cell x-grid3-td-{id}" style="{style}"><div {attr} class="x-grid3-hd-inner x-grid3-hd-{id}" unselectable="on" style="{istyle}">', this.grid.enableHdMenu ? '<a class="x-grid3-hd-btn" href="#"></a>' : '',
+                    '<td class="x-grid3-hd x-grid3-cell x-grid3-td-{id}" style="{style}"><div {tooltip} {attr} class="x-grid3-hd-inner x-grid3-hd-{id}" unselectable="on" style="{istyle}">', this.grid.enableHdMenu ? '<a class="x-grid3-hd-btn" href="#"></a>' : '',
                     '{value}<img class="x-grid3-sort-icon" src="', Ext.BLANK_IMAGE_URL, '" />',
                     "</div></td>"
                     );
@@ -233,20 +233,20 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
         var E = Ext.Element;
 
         var el = this.grid.getGridEl().dom.firstChild;
-	    var cs = el.childNodes;
+        var cs = el.childNodes;
 
-	    this.el = new E(el);
+        this.el = new E(el);
 
         this.mainWrap = new E(cs[0]);
-	    this.mainHd = new E(this.mainWrap.dom.firstChild);
-	    this.innerHd = this.mainHd.dom.firstChild;
+        this.mainHd = new E(this.mainWrap.dom.firstChild);
+        this.innerHd = this.mainHd.dom.firstChild;
         this.scroller = new E(this.mainWrap.dom.childNodes[1]);
         if(this.forceFit){
             this.scroller.setStyle('overflow-x', 'hidden');
         }
         this.mainBody = new E(this.scroller.dom.firstChild);
 
-	    this.focusEl = new E(this.scroller.dom.childNodes[1]);
+        this.focusEl = new E(this.scroller.dom.childNodes[1]);
         this.focusEl.swallowEvent("click", true);
 
         this.resizeMarker = new E(cs[1]);
@@ -332,7 +332,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
  */
     getCell : function(row, col){
         return this.getRow(row).getElementsByTagName('td')[col];
-	},
+    },
 
 /**
  * Return the &lt;TD> HtmlElement which represents the Grid's header cell for the specified column index.
@@ -340,8 +340,8 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
  * @return {HtmlElement} The &lt;TD> element.
  */
     getHeaderCell : function(index){
-	    return this.mainHd.dom.getElementsByTagName('td')[index];
-	},
+      return this.mainHd.dom.getElementsByTagName('td')[index];
+    },
 
     // manipulating elements
 
@@ -399,10 +399,16 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
 
     // private
     syncScroll : function(){
+      this.syncHeaderScroll();
+      var mb = this.scroller.dom;
+        this.grid.fireEvent("bodyscroll", mb.scrollLeft, mb.scrollTop);
+    },
+
+    // private
+    syncHeaderScroll : function(){
         var mb = this.scroller.dom;
         this.innerHd.scrollLeft = mb.scrollLeft;
         this.innerHd.scrollLeft = mb.scrollLeft; // second time for IE (1/2 time first fails, other browsers ignore)
-        this.grid.fireEvent("bodyscroll", mb.scrollLeft, mb.scrollTop);
     },
 
     // private
@@ -658,6 +664,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
             }
         }else {
             this.autoExpand();
+            this.syncHeaderScroll();
         }
         this.onLayout(vw, vh);
     },
@@ -696,16 +703,16 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
         this.initTemplates();
         this.initData(grid.store, grid.colModel);
         this.initUI(grid);
-	},
+    },
 
     // private
     getColumnId : function(index){
-	    return this.cm.getColumnId(index);
-	},
+      return this.cm.getColumnId(index);
+    },
 
     // private
     renderHeaders : function(){
-	    var cm = this.cm, ts = this.templates;
+        var cm = this.cm, ts = this.templates;
         var ct = ts.hcell;
 
         var cb = [], sb = [], p = {};
@@ -714,13 +721,29 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
             p.id = cm.getColumnId(i);
             p.value = cm.getColumnHeader(i) || "";
             p.style = this.getColumnStyle(i, true);
+            p.tooltip = this.getColumnTooltip(i);
             if(cm.config[i].align == 'right'){
                 p.istyle = 'padding-right:16px';
+            } else {
+                delete p.istyle;
             }
             cb[cb.length] = ct.apply(p);
         }
         return ts.header.apply({cells: cb.join(""), tstyle:'width:'+this.getTotalWidth()+';'});
-	},
+    },
+
+    // private
+    getColumnTooltip : function(i){
+        var tt = this.cm.getColumnTooltip(i);
+        if(tt){
+            if(Ext.QuickTips.isEnabled()){
+                return 'ext:qtip="'+tt+'"';
+            }else{
+                return 'title="'+tt+'"';
+            }
+        }
+        return "";
+    },
 
     // private
     beforeUpdate : function(){
@@ -733,7 +756,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
     },
 
     /**
-     * Focuses the specified row..
+     * Focuses the specified row.
      * @param {Number} row The row index
      */
     focusRow : function(row){
@@ -746,14 +769,12 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
      * @param {Number} col The column index
      */
     focusCell : function(row, col, hscroll){
-        var el = this.ensureVisible(row, col, hscroll);
-        if(el){
-            this.focusEl.alignTo(el, "tl-tl");
-            if(Ext.isGecko){
-                this.focusEl.focus();
-            }else{
-                this.focusEl.focus.defer(1, this.focusEl);
-            }
+        var xy = this.ensureVisible(row, col, hscroll);
+        this.focusEl.setXY(xy);
+        if(Ext.isGecko){
+            this.focusEl.focus();
+        }else{
+            this.focusEl.focus.defer(1, this.focusEl);
         }
     },
 
@@ -761,6 +782,9 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
     ensureVisible : function(row, col, hscroll){
         if(typeof row != "number"){
             row = row.rowIndex;
+        }
+        if(!this.ds){
+            return;
         }
         if(row < 0 || row >= this.ds.getCount()){
             return;
@@ -795,7 +819,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
         var sbot = stop + ch;
 
         if(ctop < stop){
-        	c.scrollTop = ctop;
+          c.scrollTop = ctop;
         }else if(cbot > sbot){
             c.scrollTop = cbot-ch;
         }
@@ -812,7 +836,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
                 c.scrollLeft = cright-c.clientWidth;
             }
         }
-        return cellEl || rowEl;
+        return cellEl ? Ext.fly(cellEl).getXY() : [c.scrollLeft, Ext.fly(rowEl).getY()];
     },
 
     // private
@@ -924,14 +948,14 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
         if((tw = cm.getTotalWidth(false)) > aw){
             var adjustCol = ac != vc ? omitColumn : extraCol;
              cm.setColumnWidth(adjustCol, Math.max(1,
-                     cm.getColumnWidth(adjustCol)- (tw-aw)), true);       
+                     cm.getColumnWidth(adjustCol)- (tw-aw)), true);
         }
 
         if(preventRefresh !== true){
             this.updateAllColumnWidths();
         }
 
-        
+
         return true;
     },
 
@@ -952,7 +976,6 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
                     }
                 }
             }
-
         }
     },
 
@@ -1244,7 +1267,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
     onColConfigChange : function(){
         delete this.lastViewWidth;
         this.indexMap = null;
-        this.refresh(true);  
+        this.refresh(true);
     },
 
     /* -------------------- UI Events and Handlers ------------------------------ */
@@ -1254,8 +1277,8 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
 
         if(grid.trackMouseOver){
             grid.on("mouseover", this.onRowOver, this);
-	        grid.on("mouseout", this.onRowOut, this);
-	    }
+          grid.on("mouseout", this.onRowOut, this);
+      }
     },
 
     // private
@@ -1268,7 +1291,7 @@ Ext.extend(Ext.grid.GridView, Ext.util.Observable, {
         if(this.headersDisabled || !this.cm.isSortable(index)){
             return;
         }
-	    g.stopEditing();
+      g.stopEditing();
         g.store.sort(this.cm.getDataIndex(index));
     },
 
@@ -1515,6 +1538,9 @@ Ext.extend(Ext.grid.GridView.SplitDragZone, Ext.dd.DDProxy, {
                 this.cm = this.grid.colModel;
                 var ci = this.view.getCellIndex(t);
                 if(adjust == -1){
+                  if (ci + adjust < 0) {
+                    return;
+                  }
                     while(this.cm.isHidden(ci+adjust)){
                         --adjust;
                         if(ci+adjust < 0){

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -9,7 +9,7 @@
 /**
  * @class Ext.menu.DateItem
  * @extends Ext.menu.Adapter
- * A menu item that wraps the {@link Ext.DatPicker} component.
+ * A menu item that wraps the {@link Ext.DatePicker} component.
  * @constructor
  * Creates a new DateItem
  * @param {Object} config Configuration options

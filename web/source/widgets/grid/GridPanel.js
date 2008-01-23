@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -114,10 +114,6 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
      * @cfg {Boolean} enableHdMenu True to enable the drop down button for menu in the headers.
      */
     enableHdMenu : true,
-    /**
-     * @cfg {Boolean} enableRowHeightSync True to manually sync row heights across locked and not locked rows.
-     */
-    enableRowHeightSync : false,
     /**
      * @cfg {Boolean} stripeRows True to stripe the rows. Default is false.
      */
@@ -659,36 +655,129 @@ Ext.grid.GridPanel = Ext.extend(Ext.Panel, {
         return String.format(this.ddText, count, count == 1 ? '' : 's');
     }
 
-    /** @cfg {String/Number} activeItem @hide */
-    /** @cfg {Boolean} autoDestroy @hide */
-    /** @cfg {Object/String/Function} autoLoad @hide */
-    /** @cfg {Boolean} autoWidth @hide */
-    /** @cfg {Boolean/Number} bufferResize @hide */
-    /** @cfg {String} defaultType @hide */
-    /** @cfg {Object} defaults @hide */
-    /** @cfg {Boolean} hideBorders @hide */
-    /** @cfg {Mixed} items @hide */
-    /** @cfg {String} layout @hide */
-    /** @cfg {Object} layoutConfig @hide */
-    /** @cfg {Boolean} monitorResize @hide */
-    /** @property items @hide */
-    /** @method add @hide */
-    /** @method cascade @hide */
-    /** @method doLayout @hide */
-    /** @method find @hide */
-    /** @method findBy @hide */
-    /** @method findById @hide */
-    /** @method findByType @hide */
-    /** @method getComponent @hide */
-    /** @method getLayout @hide */
-    /** @method getUpdater @hide */
-    /** @method insert @hide */
-    /** @method load @hide */
-    /** @method remove @hide */
-    /** @event add @hide */
-    /** @event afterLayout @hide */
-    /** @event beforeadd @hide */
-    /** @event beforeremove @hide */
-    /** @event remove @hide */
+    /** 
+     * @cfg {String/Number} activeItem 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean} autoDestroy 
+     * @hide 
+     */
+    /** 
+     * @cfg {Object/String/Function} autoLoad 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean} autoWidth 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean/Number} bufferResize 
+     * @hide 
+     */
+    /** 
+     * @cfg {String} defaultType 
+     * @hide 
+     */
+    /** 
+     * @cfg {Object} defaults 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean} hideBorders 
+     * @hide 
+     */
+    /** 
+     * @cfg {Mixed} items 
+     * @hide 
+     */
+    /** 
+     * @cfg {String} layout 
+     * @hide 
+     */
+    /** 
+     * @cfg {Object} layoutConfig 
+     * @hide 
+     */
+    /** 
+     * @cfg {Boolean} monitorResize 
+     * @hide 
+     */
+    /** 
+     * @property items 
+     * @hide 
+     */
+    /** 
+     * @method add 
+     * @hide 
+     */
+    /** 
+     * @method cascade 
+     * @hide 
+     */
+    /** 
+     * @method doLayout 
+     * @hide 
+     */
+    /** 
+     * @method find 
+     * @hide 
+     */
+    /** 
+     * @method findBy 
+     * @hide 
+     */
+    /** 
+     * @method findById 
+     * @hide 
+     */
+    /** 
+     * @method findByType 
+     * @hide 
+     */
+    /** 
+     * @method getComponent 
+     * @hide 
+     */
+    /** 
+     * @method getLayout 
+     * @hide 
+     */
+    /** 
+     * @method getUpdater 
+     * @hide 
+     */
+    /** 
+     * @method insert 
+     * @hide 
+     */
+    /** 
+     * @method load 
+     * @hide 
+     */
+    /** 
+     * @method remove 
+     * @hide 
+     */
+    /** 
+     * @event add 
+     * @hide 
+     */
+    /** 
+     * @event afterLayout 
+     * @hide 
+     */
+    /** 
+     * @event beforeadd 
+     * @hide 
+     */
+    /** 
+     * @event beforeremove 
+     * @hide 
+     */
+    /** 
+     * @event remove 
+     * @hide 
+     */
 });
 Ext.reg('grid', Ext.grid.GridPanel);

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -386,7 +386,8 @@ Ext.extend(Ext.tree.TreeNode, Ext.data.Node, {
     ensureVisible : function(callback){
         var tree = this.getOwnerTree();
         tree.expandPath(this.parentNode.getPath(), false, function(){
-            tree.getTreeEl().scrollChildIntoView(this.ui.anchor);
+            var node = tree.getNodeById(this.id);  // Somehow if we don't do this, we lose changes that happened to node in the meantime
+            tree.getTreeEl().scrollChildIntoView(node.ui.anchor);
             Ext.callback(callback);
         }.createDelegate(this));
     },

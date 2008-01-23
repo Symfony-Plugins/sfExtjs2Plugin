@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -29,7 +29,7 @@ var accordion = new Ext.Panel({
         titleCollapse: false,
         animate: true,
         activeOnTop: true
-    }
+    },
     items: [{
         title: 'Panel 1',
         html: '&lt;p&gt;Panel content!&lt;/p&gt;'

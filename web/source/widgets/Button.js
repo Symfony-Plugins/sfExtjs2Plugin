@@ -1,10 +1,11 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
+
 
 /**
  * @class Ext.Button
@@ -292,10 +293,12 @@ Ext.Button = Ext.extend(Ext.Component, {
     
     // private
     beforeDestroy: function(){
-        var btn = this.el.child(this.buttonSelector);
-        if(btn){
-            btn.removeAllListeners();
-        }
+    	if(this.rendered){
+	        var btn = this.el.child(this.buttonSelector);
+	        if(btn){
+	            btn.removeAllListeners();
+	        }
+	    }
         if(this.menu){
             Ext.destroy(this.menu);
         }
@@ -389,8 +392,8 @@ Ext.Button = Ext.extend(Ext.Component, {
     // private
     onDisable : function(){
         if(this.el){
-            if(!Ext.isIE6){
-                this.el.addClass("x-item-disabled");
+            if(!Ext.isIE6 || !this.text){
+                this.el.addClass(this.disabledClass);
             }
             this.el.dom.disabled = true;
         }
@@ -400,8 +403,8 @@ Ext.Button = Ext.extend(Ext.Component, {
     // private
     onEnable : function(){
         if(this.el){
-            if(!Ext.isIE6){
-                this.el.removeClass("x-item-disabled");
+            if(!Ext.isIE6 || !this.text){
+                this.el.removeClass(this.disabledClass);
             }
             this.el.dom.disabled = false;
         }
@@ -497,7 +500,7 @@ Ext.Button = Ext.extend(Ext.Component, {
         var internal = e.within(this.el) && e.target != this.el.dom;
         this.el.removeClass("x-btn-over");
         this.fireEvent('mouseout', this, e);
-        if(this.isMenuTriggerOut(e), internal){
+        if(this.isMenuTriggerOut(e, internal)){
             this.fireEvent('menutriggerout', this, this.menu, e);
         }
     },

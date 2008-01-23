@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -34,8 +34,28 @@ Ext.form.Field = Ext.extend(Ext.BoxComponent,  {
      * @cfg {String} clearCls The CSS class used to provide field clearing (defaults to 'x-form-clear-left')
      */
     /**
-     * @cfg {String} itemCls An additional CSS class to apply to this field (defaults to the container's itemCls
-     * value if set, or '')
+     * @cfg {String} itemCls An additional CSS class to apply to the wrapper element of this field (defaults to the container's itemCls
+     * value if set, or '').  Since it is applied to the wrapper, it allows you to write standard CSS rules that can apply to
+     * the field, the label (if specified) or any other element within the markup for the field.  Example use:
+     * <pre><code>
+// Apply a style to the field's label:
+&lt;style>
+    .required .x-form-item-label {font-weight:bold;color:red;}
+&lt;/style>
+
+new Ext.FormPanel({
+	height: 100,
+	renderTo: document.body,
+	items: [{
+		xtype: 'textfield',
+		fieldLabel: 'Name',
+		itemCls: 'required' //this label will be styled
+	},{
+		xtype: 'textfield',
+		fieldLabel: 'Favorite Color'
+	}]
+});
+</code></pre>
      */
 
     /**

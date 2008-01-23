@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -25,6 +25,7 @@ Ext.tree.TreeSorter = function(tree, config){
     tree.on("beforechildrenrendered", this.doSort, this);
     tree.on("append", this.updateSort, this);
     tree.on("insert", this.updateSort, this);
+    tree.on("textchange", this.updateSortParent, this);
     
     var dsc = this.dir && this.dir.toLowerCase() == "desc";
     var p = this.property || "text";
@@ -60,13 +61,19 @@ Ext.tree.TreeSorter.prototype = {
     },
     
     compareNodes : function(n1, n2){
-        
         return (n1.text.toUpperCase() > n2.text.toUpperCase() ? 1 : -1);
     },
     
     updateSort : function(tree, node){
         if(node.childrenRendered){
             this.doSort.defer(1, this, [node]);
+        }
+    },
+    
+    updateSortParent : function(node){
+		var p = node.parentNode;
+		if(p && p.childrenRendered){
+            this.doSort.defer(1, this, [p]);
         }
     }
 };

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -13,7 +13,7 @@
  * as its internal templating mechanisma, and is bound to an {@link Ext.data.Store}
  * so that as the data in the store changes the view is automatically updated to reflect the changes.  The view also
  * provides built-in behavior for many common events that can occur for its contained items including click, doubleclick,
- * mouseover, mouseout, etc. as well as a built-in selection model. <b>In order to use these features, an itemSelector
+ * mouseover, mouseout, etc. as well as a built-in selection model. <b>In order to use these features, an {@link #itemSelector}
  * config must be provided for the DataView to determine what nodes it will be working with.</b>
  *
  * <p>The example below binds a DataView to a {@link Ext.data.Store} and renders it into an {@link Ext.Panel}.</p>
@@ -75,7 +75,8 @@ Ext.DataView = Ext.extend(Ext.BoxComponent, {
      */
     /**
      * @cfg {String} itemSelector
-     * <b>This is a required setting</b>. A CSS selector in any format supported by {@link Ext.DomQuery} that will be used to determine what nodes this DataView will be working with.
+     * <b>This is a required setting</b>. A simple CSS selector (e.g. div.some-class or span:first-child) that will be 
+     * used to determine what nodes this DataView will be working with.
      */
     /**
      * @cfg {Boolean} multiSelect

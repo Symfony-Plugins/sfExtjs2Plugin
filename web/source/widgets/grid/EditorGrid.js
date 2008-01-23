@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -12,6 +12,7 @@
  * Class for creating and editable grid.
  
  * @constructor
+ * @param {Object} config The config object
  */
 Ext.grid.EditorGridPanel = Ext.extend(Ext.grid.GridPanel, {
     /**
@@ -24,6 +25,12 @@ Ext.grid.EditorGridPanel = Ext.extend(Ext.grid.GridPanel, {
     isEditor : true,
     // private
     detectEdit: false,
+
+	/**
+	 * @cfg {Boolean} autoEncode
+	 * True to automatically HTML encode and decode values pre and post edit (defaults to false)
+	 */
+	autoEncode : false,
 
 	/**
 	 * @cfg {Boolean} trackMouseOver @hide
@@ -137,9 +144,10 @@ Ext.grid.EditorGridPanel = Ext.extend(Ext.grid.GridPanel, {
         this.editing = false;
         this.activeEditor = null;
         ed.un("specialkey", this.selModel.onEditorKey, this.selModel);
+		var r = ed.record;
+        var field = this.colModel.getDataIndex(ed.col);
+        value = this.postEditValue(value, startValue, r, field);
         if(String(value) !== String(startValue)){
-            var r = ed.record;
-            var field = this.colModel.getDataIndex(ed.col);
             var e = {
                 grid: this,
                 record: r,
@@ -192,13 +200,21 @@ Ext.grid.EditorGridPanel = Ext.extend(Ext.grid.GridPanel, {
                     ed.on("complete", this.onEditComplete, this, {single: true});
                     ed.on("specialkey", this.selModel.onEditorKey, this.selModel);
                     this.activeEditor = ed;
-                    var v = r.data[field];
+                    var v = this.preEditValue(r, field);
                     ed.startEdit(this.view.getCell(row, col), v);
                 }).defer(50, this);
             }
         }
     },
-        
+    
+	preEditValue : function(r, field){
+		return this.autoEncode ? Ext.util.Format.htmlDecode(r.data[field]) : r.data[field];
+	},
+	
+	postEditValue : function(value, originalValue, r, field){
+		return this.autoEncode ? Ext.util.Format.htmlEncode(value) : value;
+	},
+	    
     /**
      * Stops any active editing
      */

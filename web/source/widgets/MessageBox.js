@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -28,7 +28,7 @@ Ext.Msg.prompt('Name', 'Please enter your name:', function(btn, text){
 // Show a dialog using config options:
 Ext.Msg.show({
    title:'Save Changes?',
-   msg: 'Your are closing a tab that has unsaved changes. Would you like to save your changes?',
+   msg: 'You are closing a tab that has unsaved changes. Would you like to save your changes?',
    buttons: Ext.Msg.YESNOCANCEL,
    fn: processResult,
    animEl: 'elId',

@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -492,7 +492,6 @@ mc.add(otherEl);
 
     /**
      * Finds the index of the first matching object in this collection by a specific property/value.
-     * Returns a <i>new</i> collection that has been filtered.
      * @param {String} property The name of a property on your objects.
      * @param {String/RegExp} value A string that the property values
      * should start with or a RegExp to test against the property.
@@ -513,7 +512,7 @@ mc.add(otherEl);
 
     /**
      * Find the index of the first matching object in this collection by a function.
-     * If the function returns <i>true<i> it is considered a match.
+     * If the function returns <i>true</i> it is considered a match.
      * @param {Function} fn The function to be called, it will receive the args o (the object), k (the key).
      * @param {Object} scope (optional) The scope of the function (defaults to this).
      * @param {Number} start (optional) The index to start searching at (defaults to 0).

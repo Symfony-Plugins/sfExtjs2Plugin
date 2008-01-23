@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -56,6 +56,9 @@ Ext.tree.TreeNodeUI.prototype = {
     // private
     onDisableChange : function(node, state){
         this.disabled = state;
+		if (this.checkbox) {
+			this.checkbox.disabled = state;
+		}        
         if(state){
             this.addClass("x-tree-node-disabled");
         }else{
@@ -134,6 +137,9 @@ Ext.tree.TreeNodeUI.prototype = {
 
         if(this.node.disabled){
             this.addClass("x-tree-node-disabled");
+			if (this.checkbox) {
+				this.checkbox.disabled = true;
+			}            
         }
         if(this.node.hidden){
             this.hide();

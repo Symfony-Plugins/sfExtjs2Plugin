@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -134,10 +134,13 @@ Ext.menu.MenuMgr = function(){
          * Returns a {@link Ext.menu.Menu} object
          * @param {String/Object} menu The string menu id, an existing menu object reference, or a Menu config that will
          * be used to generate and return a new Menu instance.
-         * @return {Ext.menu.Menu} The specified menu
+         * @return {Ext.menu.Menu} The specified menu, or null if none are found
          */
        get : function(menu){
            if(typeof menu == "string"){ // menu id
+               if(!menus){  // not initialized, no menus to return
+                   return null;
+               }
                return menus[menu];
            }else if(menu.events){  // menu instance
                return menu;

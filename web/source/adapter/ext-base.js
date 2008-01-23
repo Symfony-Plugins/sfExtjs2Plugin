@@ -1,5 +1,5 @@
 /*
- * Ext JS Library 2.0
+ * Ext JS Library 2.0.1
  * Copyright(c) 2006-2007, Ext JS, LLC.
  * licensing@extjs.com
  * 
@@ -1248,15 +1248,15 @@
 
     Ext.lib.Anim = {
         scroll : function(el, args, duration, easing, cb, scope) {
-            this.run(el, args, duration, easing, cb, scope, Ext.lib.Scroll);
+            return this.run(el, args, duration, easing, cb, scope, Ext.lib.Scroll);
         },
 
         motion : function(el, args, duration, easing, cb, scope) {
-            this.run(el, args, duration, easing, cb, scope, Ext.lib.Motion);
+            return this.run(el, args, duration, easing, cb, scope, Ext.lib.Motion);
         },
 
         color : function(el, args, duration, easing, cb, scope) {
-            this.run(el, args, duration, easing, cb, scope, Ext.lib.ColorAnim);
+            return this.run(el, args, duration, easing, cb, scope, Ext.lib.ColorAnim);
         },
 
         run : function(el, args, duration, easing, cb, scope, type) {
