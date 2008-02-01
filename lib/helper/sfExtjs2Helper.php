@@ -74,8 +74,8 @@ class sfExtjs2Plugin {
     $namespace = '', // current namespace
     $options   = array('theme' => '', // current theme
                        'adapter' => ''), // current adapter
-    $addons    = array('css' => array(), // current js plugins
-                       'js' => array()); // current css addons
+    $addons    = array('css' => array(), // current css plugins
+                       'js' => array()); // current js addons
   
   /**
    * Creates an instance of sfExtjs2Plugin.
@@ -376,7 +376,7 @@ class sfExtjs2Plugin {
     }
 
     // add javascript sources for ext all
-    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').'ext-all.js', 'first');
+    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').'ext-all-debug.js', 'first');
     
     if (array_key_exists('js', $this->addons))
     {
@@ -389,6 +389,9 @@ class sfExtjs2Plugin {
     // add css sources for ext all
     $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir').'ext-all.css', 'first');
 
+    // add css sources for ext fixes
+    $response->addStylesheet(sfConfig::get('sf_extjs2_plugin_dir').'patches/fixes.css', 'first');
+    
     // add css sources for theme
     $themes = sfConfig::get('sf_extjs2_themes', array());
     foreach ($themes[$this->options['theme']] as $file)
