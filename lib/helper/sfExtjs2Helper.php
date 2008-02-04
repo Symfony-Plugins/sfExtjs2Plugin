@@ -411,12 +411,13 @@ class sfExtjs2Plugin {
   /**
    * writes opening tag for javascript
    *
+   * @param  boolean scripttag
    * @return string source
    */
-  public function begin()
+  public function begin($script=true)
   {
     $source  = self::LBR;
-    $source .= sprintf("<script type='text/javascript'>%s", self::LBR);
+    if($script)$source .= sprintf("<script type='text/javascript'>%s", self::LBR);
     $source .= self::_comment(sprintf("%s// sfExtjs2Helper: %s%s", self::LBR, sfConfig::get('sf_extjs2_version'), self::LBR));
     $source .= sprintf("Ext.BLANK_IMAGE_URL = '%s'%s", sfConfig::get('sf_extjs2_spacer'), self::LBR_SM);
   
@@ -427,12 +428,13 @@ class sfExtjs2Plugin {
    * writes closing tag for javascript
    *   * 
    * @param  string source
+   * @param  boolean scripttag
    * @return Javascript source
    */
-  public function end($source = '')
+  public function end($source = ''$script=true)
   {
     $source  = sprintf("%s%s%s", self::LBR, $source, $source != '' ? self::LBR : '');
-    $source .= sprintf("</script>%s", self::LBR);
+    if($script)$source .= sprintf("</script>%s", self::LBR);
 
     echo $source;
   }
