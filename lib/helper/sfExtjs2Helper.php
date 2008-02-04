@@ -431,7 +431,7 @@ class sfExtjs2Plugin {
    * @param  boolean scripttag
    * @return Javascript source
    */
-  public function end($source = ''$script=true)
+  public function end($source = '',$script=true)
   {
     $source  = sprintf("%s%s%s", self::LBR, $source, $source != '' ? self::LBR : '');
     if($script)$source .= sprintf("</script>%s", self::LBR);
