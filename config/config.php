@@ -46,7 +46,7 @@ sfConfig::set('sf_extjs2_images_dir', '/sfExtjs2Plugin/extjs/resources/images/')
 #
 # spacer gif
 #
-sfConfig::set('sf_extjs2_spacer', '/sfExtjs2Plugin/resources/images/default/s.gif');
+sfConfig::set('sf_extjs2_spacer', '.'.sfConfig::get('sf_extjs2_images_dir').'default/s.gif');
 #
 # attributes which must handled as array
 #
