@@ -86,6 +86,7 @@ sfConfig::set('sf_extjs2_classes',
     'FormPanel'         => 'Ext.FormPanel',
     'Viewport'          => 'Ext.Viewport',
     'Window'            => 'Ext.Window',
+    'Hidden'            => 'Ext.form.Hidden',
     'DateField'         => 'Ext.form.DateField',
     'TextField'         => 'Ext.form.TextField',
     'TimeField'         => 'Ext.form.TimeField',
@@ -255,6 +256,13 @@ sfConfig::set('Ext.Window',
       'closeAction' => 'hide',
       'plain'       => 'true'
     )
+  )
+);
+
+sfConfig::set('Ext.form.Hidden',
+  array(
+    'class'       => 'Ext.form.Hidden',
+    'attributes'  => array()
   )
 );
 
