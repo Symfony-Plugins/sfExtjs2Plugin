@@ -98,6 +98,8 @@ sfConfig::set('sf_extjs2_classes',
     'Toolbar'           => 'Ext.Toolbar',
     'MenuButton'        => 'Ext.Toolbar.MenuButton',
     'Fill'              => 'Ext.Toolbar.Fill',
+    'Separator'         => 'Ext.Toolbar.Separator',
+    'Spacer'            => 'Ext.Toolbar.Spacer',
     'PagingToolbar'     => 'Ext.PagingToolbar',
     'MessageBox'        => 'Ext.MessageBox',
     'KeyMap'            => 'Ext.KeyMap'
@@ -340,6 +342,20 @@ sfConfig::set('Ext.Toolbar.MenuButton',
 sfConfig::set('Ext.Toolbar.Fill',
   array(
     'class'       => 'Ext.Toolbar.Fill',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.Toolbar.Separator',
+  array(
+    'class'       => 'Ext.Toolbar.Separator',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.Toolbar.Spacer',
+  array(
+    'class'       => 'Ext.Toolbar.Spacer',
     'attributes'  => array()
   )
 );
