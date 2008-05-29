@@ -69,9 +69,6 @@ class sfExtjs2Plugin {
     LBR_SB_L = "[\n",
     LBR_SB_R = "\n]";
 
-  public
-    $attributes = array();
-
   private
     $items     = array(),
     $namespace = '', // current namespace
