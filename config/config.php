@@ -54,7 +54,7 @@ sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'bbar', 'butto
 #
 # array values that don't need quotes
 #
-sfConfig::set('sf_extjs2_quote_except', 
+sfConfig::set('sf_extjs2_quote_except',
   array(
     'value' => array('true', 'false', 'new Ext.', 'function', 'Ext.'),
     'key'   => array('renderer', 'store', 'defaults', 'plugins', 'cm', 'ds', 'view', 'tbar', 'bbar')
@@ -69,8 +69,8 @@ sfConfig::set('sf_extjs2_classes',
     'JsonReader'    => 'Ext.data.JsonReader',
     'Store'         => 'Ext.data.Store',
     'GroupingStore' => 'Ext.data.GroupingStore',
-    'HttpProxy'     => 'Ext.data.HttpProxy',   
-    'Template'      => 'Ext.Template',  
+    'HttpProxy'     => 'Ext.data.HttpProxy',
+    'Template'      => 'Ext.Template',
     'XTemplate'     => 'Ext.XTemplate',
     // widgets
     'BoxComponent'      => 'Ext.BoxComponent',
@@ -93,8 +93,8 @@ sfConfig::set('sf_extjs2_classes',
     'TimeField'         => 'Ext.form.TimeField',
     'HtmlEditor'        => 'Ext.form.HtmlEditor',
     'Menu'              => 'Ext.menu.Menu',
-    'Item'	  		      => 'Ext.menu.Item',   
-    'CheckItem' 	      => 'Ext.menu.CheckItem',  
+    'Item'	  		      => 'Ext.menu.Item',
+    'CheckItem' 	      => 'Ext.menu.CheckItem',
     'Toolbar'           => 'Ext.Toolbar',
     'MenuButton'        => 'Ext.Toolbar.MenuButton',
     'Fill'              => 'Ext.Toolbar.Fill',

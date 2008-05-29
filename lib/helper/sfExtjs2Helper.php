@@ -270,6 +270,7 @@ class sfExtjs2Plugin {
       }
     }
 
+
     # list attributes must defined as an Javascript array
     # therefore all list attributes must be rendered as [attributeA, attributeB, attributeC]
     foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute)
@@ -319,8 +320,17 @@ class sfExtjs2Plugin {
    */
   public static function getExtObjectComponent($attributes = array(), $config = array(), $parameters = array(), $datas = array())
   {
-    $attributes = self::_build_attributes($attributes, $config['attributes']);
-    $attributes = sprintf('%s', $attributes != '' ? self::LBR_CB_L.$attributes.self::LBR_CB_R : '');
+    // HACK for XTemplate
+    if ($config['class']=='Ext.XTemplate')
+    {
+      $attributes = self::_build_attributes($attributes, $config['attributes'], true);
+      $attributes = sprintf('%s', $attributes != '' ? self::LBR_SB_L.$attributes.self::LBR_SB_R : '');
+    }
+    else
+    {
+      $attributes = self::_build_attributes($attributes, $config['attributes']);
+      $attributes = sprintf('%s', $attributes != '' ? self::LBR_CB_L.$attributes.self::LBR_CB_R : '');
+    }
 
     $parameters = implode(self::LBR_CM, $parameters);
     $datas = $config['class'] == 'anonymousClass' ? self::_build_datas($datas) : (!empty($datas) ? "'".implode("'".self::LBR_CM."'", $datas)."'" : '');
@@ -376,7 +386,7 @@ class sfExtjs2Plugin {
     }
 
     // add javascript sources for ext all
-    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').'ext-all.js', 'first');
+    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').'ext-all-debug.js', 'first');
 
     if (array_key_exists('js', $this->addons))
     {
@@ -738,7 +748,7 @@ class sfExtjs2Plugin {
    * @param array default attributes
    * @return string merged attributes
    */
-  private static function _build_attributes ($custom_attributes = array(), $default_attributes = array())
+  private static function _build_attributes ($custom_attributes = array(), $default_attributes = array(), $always_quote_numeric = false)
   {
     $attributes = '';
 
@@ -756,7 +766,7 @@ class sfExtjs2Plugin {
       }
       else
       {
-        $attributes .= sprintf('%s%s', ($attributes == '' ? '' : self::LBR_CM), self::_quote($key, $value));
+        $attributes .= sprintf('%s%s', ($attributes == '' ? '' : self::LBR_CM), self::_quote($key, $value, $always_quote_numeric));
       }
     }
 
@@ -806,7 +816,7 @@ class sfExtjs2Plugin {
    * @param string value
    * @return string attribute
    */
-  private static function _quote($key, $value)
+  private static function _quote($key, $value, $always_quote = false)
   {
     if (is_array($value))
     {
@@ -838,7 +848,8 @@ class sfExtjs2Plugin {
       return 'null';
     }
 
-    if (!$value instanceof sfExtjs2Var && self::_quote_except($key, $value))
+    //always quote has of course an exception for sfExtjs2Vars
+    if (($always_quote && !$value instanceof sfExtjs2Var) || (!$value instanceof sfExtjs2Var && self::_quote_except($key, $value)))
     {
       $attribute = '\''.$value.'\'';
       return $attribute;
