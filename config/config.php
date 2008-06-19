@@ -224,11 +224,11 @@ sfConfig::set('Ext.TabPanel',
   array(
     'class'       => 'Ext.TabPanel',
     'attributes'  => array(
-      'resizeTabs'      => 'true',
-      'minTabWidth'     => '100',
-      'tabWidth'        => '150',
-      'activeTab'       => '0',
-      'enableTabScroll' => 'true',
+      'resizeTabs'      => true,
+      'minTabWidth'     => 100,
+      'tabWidth'        => 150,
+      'activeTab'       => 0,
+      'enableTabScroll' => true,
       'defaults'        => '{ autoScroll: true }'
     )
   )
@@ -252,12 +252,12 @@ sfConfig::set('Ext.Window',
   array(
     'class'       => 'Ext.Window',
     'attributes'  => array(
-      'constrain'   => 'true',
+      'constrain'   => true,
       'layout'      => 'fit',
-      'width'       => '500',
-      'height'      => '300',
+      'width'       => 500,
+      'height'      => 300,
       'closeAction' => 'hide',
-      'plain'       => 'true'
+      'plain'       => true
     )
   )
 );
