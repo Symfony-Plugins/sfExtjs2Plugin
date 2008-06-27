@@ -833,7 +833,15 @@ class sfExtjs2Plugin {
         }
       }
 
-      $attribute = sprintf('{ %s }', $attribute);
+      // test if key is one of the special list-attributes
+      if (in_array($key, sfConfig::get('sf_extjs2_list_attributes')) && ($key!==0)) //don't know why 0 is a match
+      {
+        $attribute = sprintf('[ %s ]', $attribute);
+      }
+      else
+      {
+        $attribute = sprintf('{ %s }', $attribute);
+      }
       return $attribute;
     }
 
