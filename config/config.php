@@ -108,7 +108,7 @@ sfConfig::set('sf_extjs2_classes',
     'TreeLoader'        => 'Ext.tree.TreeLoader',
     'Node'              => 'Ext.data.Node',
     'TreeNode'          => 'Ext.tree.TreeNode',
-    'AsyncTreeNode'     => 'Ext.tree.AsyncTreeNode'
+    'AsyncTreeNode'     => 'Ext.tree.AsyncTreeNode',
     // base
     'Observable'        => 'Ext.util.Observable',
   )
