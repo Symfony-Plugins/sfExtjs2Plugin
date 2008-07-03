@@ -102,7 +102,15 @@ sfConfig::set('sf_extjs2_classes',
     'Spacer'            => 'Ext.Toolbar.Spacer',
     'PagingToolbar'     => 'Ext.PagingToolbar',
     'MessageBox'        => 'Ext.MessageBox',
-    'KeyMap'            => 'Ext.KeyMap'
+    'KeyMap'            => 'Ext.KeyMap',
+    // tree stuff
+    'TreePanel'         => 'Ext.tree.TreePanel',
+    'TreeLoader'        => 'Ext.tree.TreeLoader',
+    'Node'              => 'Ext.data.Node',
+    'TreeNode'          => 'Ext.tree.TreeNode',
+    'AsyncTreeNode'     => 'Ext.tree.AsyncTreeNode'
+    // base
+    'Observable'        => 'Ext.util.Observable',
   )
 );
 #
