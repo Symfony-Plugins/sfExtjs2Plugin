@@ -2,7 +2,7 @@
  * Ext JS Library 2.1
  * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
- * 
+ *
  * http://extjs.com/license
  */
 
@@ -87,6 +87,10 @@ Ext.ComponentMgr = function(){
         registerType : function(xtype, cls){
             types[xtype] = cls;
             cls.xtype = xtype;
+        },
+
+        hasType : function(xtype){
+          return typeof(types[xtype] != 'undefined');
         },
 
         // private
