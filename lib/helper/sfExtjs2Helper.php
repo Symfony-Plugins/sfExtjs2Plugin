@@ -386,8 +386,8 @@ class sfExtjs2Plugin {
     }
 
     // add javascript sources for ext all
-    //TODO: add switch to debug for dev environment
-    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').'ext-all.js', 'first');
+    $debug = (sfConfig::get('sf_web_debug', false)) ? '-debug' : ''; // if in web_debug mode, also use debug-extjs source
+    $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').'ext-all'.$debug.'.js', 'first');
 
     if (array_key_exists('js', $this->addons))
     {
