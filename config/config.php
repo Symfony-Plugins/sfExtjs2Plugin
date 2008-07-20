@@ -135,6 +135,13 @@ sfConfig::set('Ext.data.Store',
   )
 );
 
+sfConfig::set('Ext.data.SimpleStore',
+  array(
+    'class'       => 'Ext.data.SimpleStore',
+    'attributes'  => array()
+  )
+);
+
 sfConfig::set('Ext.data.GroupingStore',
   array(
     'class'       => 'Ext.data.GroupingStore',
