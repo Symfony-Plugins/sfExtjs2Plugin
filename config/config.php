@@ -69,6 +69,7 @@ sfConfig::set('sf_extjs2_classes',
     'JsonReader'    => 'Ext.data.JsonReader',
     'Store'         => 'Ext.data.Store',
     'SimpleStore'   => 'Ext.data.SimpleStore',
+    'JsonStore'     => 'Ext.data.JsonStore',
     'GroupingStore' => 'Ext.data.GroupingStore',
     'HttpProxy'     => 'Ext.data.HttpProxy',
     'Template'      => 'Ext.Template',
@@ -138,6 +139,13 @@ sfConfig::set('Ext.data.Store',
 sfConfig::set('Ext.data.SimpleStore',
   array(
     'class'       => 'Ext.data.SimpleStore',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.data.JsonStore',
+  array(
+    'class'       => 'Ext.data.JsonStore',
     'attributes'  => array()
   )
 );
