@@ -3,9 +3,12 @@
 /**
  * @plugin           sfExtjs2Plugin
  * @description      sfExtjs2Plugin is a symfony plugin that provides an easy to use wrapper for the Ext javascript library
- * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Jerome Macias
- * @version          0.0.58
+ * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree<Leon [at] fun4me [dot] demon [dot] nl>, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Jerome Macias
+ * @version          0.60
  * @last modified
+ *
+ *                   08.22.2008
+ *                      Several by LvanderRee see svn log
  *                   12.28.2007 Jerome
  *                    - Fixed method getExtObject
  *                    - Added constants
@@ -130,7 +133,7 @@ class sfExtjs2Plugin {
   {
     foreach ($this->addons as $type => $v)
     {
-      if (array_key_exists($type, $addons))
+      if (isset($addons[$type]))
       {
         $this->addons[$type] = is_array($addons[$type]) ? $addons[$type] : array($addons[$type]);
       }
@@ -172,7 +175,7 @@ class sfExtjs2Plugin {
   public static function __call ($class, $attributes)
   {
     $classes = sfConfig::get('sf_extjs2_classes');
-    if (is_array($classes) && array_key_exists($class, $classes))
+    if (is_array($classes) && isset($classes[$class]))
     {
       $object = sfConfig::get($classes[$class]);
       return self::getExtObject($object['class'], $attributes[0]);
@@ -233,37 +236,37 @@ class sfExtjs2Plugin {
 
     # syntax A is a shortform of syntax B
     # if syntax A is used then convert syntax A to syntax B
-    if (is_array($params) && !array_key_exists('attributes', $params) && !array_key_exists('parameters', $params) && !array_key_exists('datas', $params))
+    if (is_array($params) && !isset($params['attributes']) && !isset($params['parameters']) && !isset($params['datas']))
     {
       $attributes = $params;
     }
     else
     {
-      $attributes = array_key_exists('attributes', $params) ? $params['attributes'] : array();
+      $attributes = isset($params['attributes']) ? $params['attributes'] : array();
 
       // name for var
-      if (is_array($params) && array_key_exists('name', $params))
+      if (is_array($params) && isset($params['name']))
       {
         $name = $params['name'];
         unset($params['name']);
       }
 
       // 'lbr' for a line break
-      if (is_array($params) && array_key_exists('lbr', $params))
+      if (is_array($params) && isset($params['lbr']))
       {
         $lbr = $params['lbr'];
         unset($params['name']);
       }
 
       // parameters for constructor
-      if (is_array($params) && array_key_exists('parameters', $params))
+      if (is_array($params) && isset($params['parameters']))
       {
         $parameters = $params['parameters'];
         unset($params['parameters']);
       }
 
       // datas for constructor
-      if (is_array($params) && array_key_exists('datas', $params))
+      if (is_array($params) && isset($params['datas']))
       {
         $datas = $params['datas'];
         unset($params['datas']);
@@ -275,7 +278,7 @@ class sfExtjs2Plugin {
     # therefore all list attributes must be rendered as [attributeA, attributeB, attributeC]
     foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute)
     {
-      if (array_key_exists($attribute, $attributes) && !$attributes[$attribute] instanceof sfExtjs2Var)
+      if (isset($attributes[$attribute]) && !$attributes[$attribute] instanceof sfExtjs2Var)
       {
         $attributes[$attribute] = sprintf
         (
@@ -389,7 +392,7 @@ class sfExtjs2Plugin {
     $debug = (sfConfig::get('sf_web_debug', false)) ? '-debug' : ''; // if in web_debug mode, also use debug-extjs source
     $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').'ext-all'.$debug.'.js', 'first');
 
-    if (array_key_exists('js', $this->addons))
+    if (isset($this->addons['js']))
     {
       foreach ($this->addons['js'] as $jsAddon)
       {
@@ -410,7 +413,7 @@ class sfExtjs2Plugin {
       $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir').$file, 'first');
     }
 
-    if (array_key_exists('css', $this->addons))
+    if (isset($this->addons['css']))
     {
       foreach ($this->addons['css'] as $cssAddon)
       {
@@ -507,7 +510,7 @@ class sfExtjs2Plugin {
    {
      // private attributes
      $sourcePrivate = '';
-     if (array_key_exists('private', $attributes))
+     if (isset($attributes['private']))
      {
        foreach ($attributes['private'] as $key => $value)
        {
@@ -517,7 +520,7 @@ class sfExtjs2Plugin {
 
      // public attributes
      $sourcePublic = '';
-     if (array_key_exists('public', $attributes))
+     if (isset($attributes['public']))
      {
        // write attributes
        $sourcePublic .= self::_build_attributes($attributes['public']);
@@ -700,10 +703,10 @@ class sfExtjs2Plugin {
    */
   public static function asMethod($attributes = array())
   {
-    $name = is_array($attributes) && array_key_exists('name', $attributes) ? $attributes['name'] : '';
-    $parameters = is_array($attributes) && array_key_exists('parameters', $attributes) ? $attributes['parameters'] : '';
+    $name = is_array($attributes) && isset($attributes['name']) ? $attributes['name'] : '';
+    $parameters = is_array($attributes) && isset($attributes['parameters']) ? $attributes['parameters'] : '';
 
-    $source = is_array($attributes) && array_key_exists('source', $attributes) ? $attributes['source'] : $attributes;
+    $source = is_array($attributes) && isset($attributes['source']) ? $attributes['source'] : $attributes;
     $source = preg_replace_callback(
       '/(\<\?php)(.*?)(\?>)/si',
       array('self', '_methodEvalPHP'),
@@ -738,7 +741,7 @@ class sfExtjs2Plugin {
    *
    * Usage:
    *
-   *         _buid_attributes(
+   *         _build_attributes(
    *             array('foo' => 'custombar', 'foo1' => 'bar1', 'foo2' => 'bar2'),    // custom attributes
    *             array('foo' => 'defbar')                                            // default attributes
    *        )
