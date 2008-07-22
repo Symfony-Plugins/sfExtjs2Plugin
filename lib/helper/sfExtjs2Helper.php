@@ -857,8 +857,8 @@ class sfExtjs2Plugin {
       return 'null';
     }
 
-    //always quote has of course an exception for sfExtjs2Vars
-    if (($always_quote && !$value instanceof sfExtjs2Var) || (!$value instanceof sfExtjs2Var && self::_quote_except($key, $value)))
+    //always quote has of course an exception for numerics and sfExtjs2Vars
+    if (!is_numeric($value) && (($always_quote && !$value instanceof sfExtjs2Var) || (!$value instanceof sfExtjs2Var && self::_quote_except($key, $value))))
     {
       $attribute = '\''.$value.'\'';
       return $attribute;
