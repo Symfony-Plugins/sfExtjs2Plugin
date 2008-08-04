@@ -341,12 +341,21 @@ class sfExtjs2Plugin {
    */
   public static function getExtObjectComponent($attributes = array(), $config = array(), $parameters = array(), $datas = array())
   {
-    $isAssoc = self::isAssoc($config['class'], $attributes);
-    $LBR_B_L = $isAssoc ? self::LBR_CB_L : self::LBR_SB_L;
-    $LBR_B_R = $isAssoc ? self::LBR_CB_R : self::LBR_SB_R;
+    // HACK for XTemplate
+    if ($config['class']=='Ext.XTemplate')
+    {
+      $attributes = self::_build_attributes($attributes, $config['attributes'], true);
+      $attributes = sprintf('%s', $attributes != '' ? self::LBR_SB_L.$attributes.self::LBR_SB_R : '');
+    }
+    else
+    {
+      $isAssoc = self::isAssoc($config['class'], $attributes);
+      $LBR_B_L = $isAssoc ? self::LBR_CB_L : self::LBR_SB_L;
+      $LBR_B_R = $isAssoc ? self::LBR_CB_R : self::LBR_SB_R;
 
-    $attributes = self::_build_attributes($attributes, $config['attributes']);
-    $attributes = sprintf('%s', $attributes != '' ? $LBR_B_L.$attributes.$LBR_B_R : '');
+      $attributes = self::_build_attributes($attributes, $config['attributes']);
+      $attributes = sprintf('%s', $attributes != '' ? $LBR_B_L.$attributes.$LBR_B_R : '');
+    }
 
     $parameters = implode(self::LBR_CM, $parameters);
     $datas = $config['class'] == 'anonymousClass' ? self::_build_datas($datas) : (!empty($datas) ? "'".implode("'".self::LBR_CM."'", $datas)."'" : '');
