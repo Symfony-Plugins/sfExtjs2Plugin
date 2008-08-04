@@ -6,9 +6,15 @@
  * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree<Leon [at] fun4me [dot] demon [dot] nl>, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Jerome Macias
  * @version          0.60
  * @last modified
- *
- *                   08.22.2008
+ *                   07.22.2008
  *                      Several by LvanderRee see svn log
+ *                   02.18.2008 swagner
+ *                    - Fixed harmless bug (a simple empty array resulted in "['']" insted of"[]")
+ *                   02.12.2008 swagner
+ *                    - added two help-functions (isAssoc() and isSimpleArray())
+ *                    - Fixed _quote() and added check for simple Array
+ *                   02.04.2008 swagner
+ *                    - Fixed handling of arrays in getExtObjectComponent
  *                   12.28.2007 Jerome
  *                    - Fixed method getExtObject
  *                    - Added constants
@@ -79,6 +85,19 @@ class sfExtjs2Plugin {
                        'adapter' => ''), // current adapter
     $addons    = array('css' => array(), // current css plugins
                        'js' => array()); // current js addons
+
+  static public function isAssoc($class, $arr){
+
+    // constructors which accept arrays only
+    if (in_array($class, array('Ext.XTemplate'))) return true;
+
+    foreach ( $arr as $key => $skip ) {
+      if ( !is_integer( $key ) ) {
+            return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * Creates an instance of sfExtjs2Plugin.
@@ -273,7 +292,6 @@ class sfExtjs2Plugin {
       }
     }
 
-
     # list attributes must defined as an Javascript array
     # therefore all list attributes must be rendered as [attributeA, attributeB, attributeC]
     foreach (sfConfig::get('sf_extjs2_list_attributes') as $attribute)
@@ -323,17 +341,12 @@ class sfExtjs2Plugin {
    */
   public static function getExtObjectComponent($attributes = array(), $config = array(), $parameters = array(), $datas = array())
   {
-    // HACK for XTemplate
-    if ($config['class']=='Ext.XTemplate')
-    {
-      $attributes = self::_build_attributes($attributes, $config['attributes'], true);
-      $attributes = sprintf('%s', $attributes != '' ? self::LBR_SB_L.$attributes.self::LBR_SB_R : '');
-    }
-    else
-    {
-      $attributes = self::_build_attributes($attributes, $config['attributes']);
-      $attributes = sprintf('%s', $attributes != '' ? self::LBR_CB_L.$attributes.self::LBR_CB_R : '');
-    }
+    $isAssoc = self::isAssoc($config['class'], $attributes);
+    $LBR_B_L = $isAssoc ? self::LBR_CB_L : self::LBR_SB_L;
+    $LBR_B_R = $isAssoc ? self::LBR_CB_R : self::LBR_SB_R;
+
+    $attributes = self::_build_attributes($attributes, $config['attributes']);
+    $attributes = sprintf('%s', $attributes != '' ? $LBR_B_L.$attributes.$LBR_B_R : '');
 
     $parameters = implode(self::LBR_CM, $parameters);
     $datas = $config['class'] == 'anonymousClass' ? self::_build_datas($datas) : (!empty($datas) ? "'".implode("'".self::LBR_CM."'", $datas)."'" : '');
@@ -383,9 +396,12 @@ class sfExtjs2Plugin {
 
     // add javascript sources for adapter
     $adapters = sfConfig::get('sf_extjs2_adapters', array());
-    foreach ($adapters[$this->options['adapter']] as $file)
-    {
-      $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').$file, 'first');
+
+    if ($this->options['adapter']) {
+        foreach ($adapters[$this->options['adapter']] as $file)
+        {
+            $response->addJavascript(sfConfig::get('sf_extjs2_js_dir').$file, 'first');
+        }
     }
 
     // add javascript sources for ext all
@@ -408,9 +424,12 @@ class sfExtjs2Plugin {
 
     // add css sources for theme
     $themes = sfConfig::get('sf_extjs2_themes', array());
-    foreach ($themes[$this->options['theme']] as $file)
-    {
-      $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir').$file, 'first');
+
+    if ($this->options['theme']) {
+        foreach ($themes[$this->options['theme']] as $file)
+        {
+            $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir').$file, 'first');
+        }
     }
 
     if (isset($this->addons['css']))
@@ -428,10 +447,10 @@ class sfExtjs2Plugin {
    * @param  boolean scripttag
    * @return string source
    */
-  public function begin($script=true)
+  public function begin($script = true)
   {
     $source  = self::LBR;
-    if($script)$source .= sprintf("<script type='text/javascript'>%s", self::LBR);
+    if($script) $source .= sprintf("<script type='text/javascript'>%s", self::LBR);
     $source .= self::_comment(sprintf("%s// sfExtjs2Helper: %s%s", self::LBR, sfConfig::get('sf_extjs2_version'), self::LBR));
     $source .= sprintf("Ext.BLANK_IMAGE_URL = '%s'%s", sfConfig::get('sf_extjs2_spacer'), self::LBR_SM);
 
@@ -445,10 +464,10 @@ class sfExtjs2Plugin {
    * @param  boolean scripttag
    * @return Javascript source
    */
-  public function end($source = '',$script=true)
+  public function end($source = '', $script = true)
   {
     $source  = sprintf("%s%s%s", self::LBR, $source, $source != '' ? self::LBR : '');
-    if($script)$source .= sprintf("</script>%s", self::LBR);
+    if($script) $source .= sprintf("</script>%s", self::LBR);
 
     echo $source;
   }
@@ -811,6 +830,24 @@ class sfExtjs2Plugin {
   }
 
   /**
+   * checks if $arr is a simple Array (contains
+   * a list of komma-separated values)
+   *
+   * @param Array
+   */
+  private static function isSimpleArray($arr){
+    foreach ( $arr as $key => $value ) {
+      if ( !is_numeric( $key ) ) {
+        return false;
+      }
+      if (is_array($value)){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * quotes everything except:
    *   values that are arrays
    *   values that are sfExtjs2Var
@@ -824,6 +861,16 @@ class sfExtjs2Plugin {
   {
     if (is_array($value))
     {
+      if (self::isSimpleArray($value)){
+        if ($value == null){
+          return "[]";
+        }
+        else
+        {
+          return $attribute = "['".implode("','",$value)."']";
+        }
+      }
+
       $attribute = '';
       foreach ($value as $k => $v)
       {
