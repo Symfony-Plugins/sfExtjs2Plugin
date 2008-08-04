@@ -6,8 +6,10 @@
  * @author           Benjamin Runnels<benjamin.r.runnels [at] citi [dot] com>, Leon van der Ree<Leon [at] fun4me [dot] demon [dot] nl>, Wolfgang Kubens<wolfgang.kubens [at] gmx [dot] net>, Jerome Macias
  * @version          0.60
  * @last modified
+ *                   08.04.2008 Eric
+ *                    - Fixed the default value for isAssoc() with XTemplate
  *                   07.22.2008
- *                      Several by LvanderRee see svn log
+ *                    - Several by LvanderRee see svn log
  *                   02.18.2008 swagner
  *                    - Fixed harmless bug (a simple empty array resulted in "['']" insted of"[]")
  *                   02.12.2008 swagner
@@ -89,7 +91,7 @@ class sfExtjs2Plugin {
   static public function isAssoc($class, $arr){
 
     // constructors which accept arrays only
-    if (in_array($class, array('Ext.XTemplate'))) return true;
+    if (in_array($class, array('Ext.XTemplate'))) return false;
 
     foreach ( $arr as $key => $skip ) {
       if ( !is_integer( $key ) ) {
