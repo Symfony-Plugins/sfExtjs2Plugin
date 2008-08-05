@@ -93,9 +93,11 @@ class sfExtjs2Plugin {
     // constructors which accept arrays only
     if (in_array($class, array('Ext.XTemplate'))) return false;
 
-    foreach ( $arr as $key => $skip ) {
-      if ( !is_integer( $key ) ) {
-            return true;
+    foreach ( $arr as $key => $skip )
+    {
+      if ( !is_integer( $key ) )
+      {
+        return true;
       }
     }
     return false;
