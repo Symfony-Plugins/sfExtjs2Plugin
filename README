@@ -1,15 +1,5 @@
 = sfExtjs2Plugin =
 
-{{{
-#!html
-<div class="wiki-toc" style="float:right;border: solid 1px #C6CDDE;padding:10px;margin:5px;width:250px;font-size:11px;">
-}}}
-[[PageOutline(1-6,,inline)]]
-{{{
-#!html
-</div>
-}}}
-
 = sfExtjs2Plugin =
 
 Write ExtJS2.1 code in PHP
@@ -100,6 +90,7 @@ sfExtjs2Plugin has a magic method __call to render calls to Extjs classes automa
 ||!TextField         || [http://extjs.com/deploy/dev/docs/?class=Ext.form.TextField Ext.form.TextField] ||
 ||!TimeField         || [http://extjs.com/deploy/dev/docs/?class=Ext.form.TimeField Ext.form.TimeField] ||
 ||!HtmlEditor        || [http://extjs.com/deploy/dev/docs/?class=Ext.form.HtmlEditor Ext.form.HtmlEditor] ||
+||!ComboBox        || [http://extjs.com/deploy/dev/docs/?class=Ext.form.ComboBox Ext.form.ComboBox] ||
 ||Menu              || [http://extjs.com/deploy/dev/docs/?class=Ext.menu.Menu Ext.menu.Menu] ||
 ||Item              || [http://extjs.com/deploy/dev/docs/?class=Ext.menu.Item Ext.menu.Item] ||
 ||!CheckItem         || [http://extjs.com/deploy/dev/docs/?class=Ext.menu.CheckItem Ext.menu.CheckItem] ||

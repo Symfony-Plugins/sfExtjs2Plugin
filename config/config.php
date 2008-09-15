@@ -94,6 +94,7 @@ sfConfig::set('sf_extjs2_classes',
     'TextField'         => 'Ext.form.TextField',
     'TimeField'         => 'Ext.form.TimeField',
     'HtmlEditor'        => 'Ext.form.HtmlEditor',
+    'ComboBox'          => 'Ext.form.ComboBox',
     'Menu'              => 'Ext.menu.Menu',
     'Item'	  		      => 'Ext.menu.Item',
     'CheckItem' 	      => 'Ext.menu.CheckItem',
@@ -324,6 +325,13 @@ sfConfig::set('Ext.form.TimeField',
 sfConfig::set('Ext.form.HtmlEditor',
   array(
     'class'       => 'Ext.form.HtmlEditor',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.form.ComboBox',
+  array(
+    'class'       => 'Ext.form.ComboBox',
     'attributes'  => array()
   )
 );
