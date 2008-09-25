@@ -97,6 +97,7 @@ sfConfig::set('sf_extjs2_classes',
     'ComboBox'          => 'Ext.form.ComboBox',
     'Menu'              => 'Ext.menu.Menu',
     'Item'	  		      => 'Ext.menu.Item',
+    'TextItem'          => 'Ext.menu.TextItem',
     'CheckItem' 	      => 'Ext.menu.CheckItem',
     'Toolbar'           => 'Ext.Toolbar',
     'MenuButton'        => 'Ext.Toolbar.MenuButton',
@@ -346,6 +347,13 @@ sfConfig::set('Ext.menu.Menu',
 sfConfig::set('Ext.menu.Item',
   array(
     'class'       => 'Ext.menu.Item',
+    'attributes'  => array()
+  )
+);
+
+sfConfig::set('Ext.menu.TextItem',
+  array(
+    'class'       => 'Ext.menu.TextItem',
     'attributes'  => array()
   )
 );
