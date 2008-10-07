@@ -50,7 +50,7 @@ sfConfig::set('sf_extjs2_spacer', sfConfig::get('sf_extjs2_images_dir').'default
 #
 # attributes which must handled as array
 #
-sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'bbar', 'buttons', 'plugins', 'view', 'fields', 'tools'));
+sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'bbar', 'buttons', 'plugins', 'view', 'fields', 'tools', 'actions'));
 #
 # array values that don't need quotes
 #
@@ -96,9 +96,9 @@ sfConfig::set('sf_extjs2_classes',
     'HtmlEditor'        => 'Ext.form.HtmlEditor',
     'ComboBox'          => 'Ext.form.ComboBox',
     'Menu'              => 'Ext.menu.Menu',
-    'Item'	  		      => 'Ext.menu.Item',
+    'Item'              => 'Ext.menu.Item',
     'TextItem'          => 'Ext.menu.TextItem',
-    'CheckItem' 	      => 'Ext.menu.CheckItem',
+    'CheckItem'         => 'Ext.menu.CheckItem',
     'Toolbar'           => 'Ext.Toolbar',
     'MenuButton'        => 'Ext.Toolbar.MenuButton',
     'Fill'              => 'Ext.Toolbar.Fill',
