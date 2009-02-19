@@ -57,8 +57,8 @@ sfConfig::set('sf_extjs2_list_attributes', array('items', 'tbar', 'bbar', 'butto
 sfConfig::set('sf_extjs2_quote_except',
   array(
     'key'   => array('renderer', 'store', 'defaults', 'plugins', 'cm', 'ds', 'view', 'tbar', 'bbar', 'scope', 'key', 'parentPanel', 'handler'),
-    //'value' => array('true', 'false', 'new Ext.', 'function', 'Ext.', '__(', '{', 'this.'),
-    'value' => array('true', 'false', 'new', 'function', 'Ext.', '__(', '{', 'this.')
+    'value' => array('true', 'false', 'new Ext.', 'function', 'Ext.', '__(', '{', 'this.'),
+    //'value' => array('true', 'false', 'new', 'function', 'Ext.', '__(', '{', 'this.')
   )
 );
 #
