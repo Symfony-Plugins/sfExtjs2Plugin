@@ -424,7 +424,7 @@ class sfExtjs2Plugin {
     $response->addStylesheet(sfConfig::get('sf_extjs2_css_dir').'ext-all.css', 'first');
 
     // add css sources for ext fixes
-    $response->addStylesheet(sfConfig::get('sf_extjs2_plugin_dir').'patches/fixes.css', 'first');
+    //$response->addStylesheet(sfConfig::get('sf_extjs2_plugin_dir').'patches/fixes.css', 'first');
 
     // add css sources for theme
     $themes = sfConfig::get('sf_extjs2_themes', array());
