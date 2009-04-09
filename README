@@ -2,7 +2,7 @@
 
 = sfExtjs2Plugin =
 
-Write ExtJS2.1 code in PHP
+Write ExtJS2.2.1 code in PHP
 
 == Installation ==
 
@@ -559,7 +559,7 @@ Please note the 'source'-tab
 
 == Notes ==
 
-This plugin is bundled with the final ExtJS 2.1 '''Use only with PHP 5.2.x and above!
+This plugin is bundled with the final ExtJS 2.2.1 '''Use only with PHP 5.2.x and above!
 
 == Bugs ==
 
